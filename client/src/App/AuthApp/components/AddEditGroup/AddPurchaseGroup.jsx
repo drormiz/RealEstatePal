@@ -5,6 +5,7 @@ import AddEdiGroup from './AddEditPurchaseGroup';
 const AddGroup = () => {
  
   const onSubmitHandler = async(newValue) => {
+    await getClient().post(`api/purchaseGroups`,newValue);
   };
 
   return (

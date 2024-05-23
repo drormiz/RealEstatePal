@@ -12,9 +12,11 @@ const PurchaseGroupForm = ({ value = null, onSubmitHandler }) => {
   const {user} = useUser();
   const { register, handleSubmit, setValue, reset, watch } = useForm({ resolver: zodResolver(addEditGroupFormSchema) });
 
-
   const onSubmit = async (data) => {
-
+    await onSubmitHandler({
+      ...data,
+      owner: user._id,
+    });
   };
 
   return (
@@ -31,6 +33,15 @@ const PurchaseGroupForm = ({ value = null, onSubmitHandler }) => {
                 fullWidth
                 label="Name"
                 {...register('name')}
+                required
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                {...register('description')}
                 required
               />
             </Grid>
