@@ -1,6 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Profile from '../Profile/Profile';
 import AddGroup from "../AddEditGroup/AddPurchaseGroup";
+import PurchaseGroupsFeed from "../PurchaseGroupsFeed/index";
 
 const AuthenticatedRoutes = () => (
     <Routes>
@@ -12,6 +13,9 @@ const AuthenticatedRoutes = () => (
         </Route>
         <Route path='/add-purchase-group'>
             <Route index element={<AddGroup/>} />
+        </Route>
+        <Route path='/purchase-groups-feed'>
+            <Route index element={<PurchaseGroupsFeed/>} />
         </Route>
         <Route path='*' element={<Navigate to="/" />} />
     </Routes>
