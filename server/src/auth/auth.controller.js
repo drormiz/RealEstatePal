@@ -30,7 +30,10 @@ export const registerUser = async ({ body }, res, next) => {
 
 export const loginUser = async ({ body: { username, password } }, res, next) => {
     try {
-        const user = await findUserByUsername(username);
+        let user = await findUserByUsername(username);
+        if (!user) {
+            user = await findUserByEmail(username);
+        }
         if (user) {
             const match = await comparePaswords(password, user.password);
 

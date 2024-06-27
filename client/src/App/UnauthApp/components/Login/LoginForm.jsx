@@ -68,7 +68,7 @@ const LoginForm = () => {
             <Column sx={{ gap: 1 }}>
                 <TextField
                     {...register('username')}
-                    label='Username'
+                    label='Username \ Email'
                     variant='standard'
                     autoFocus
                     InputProps={{
