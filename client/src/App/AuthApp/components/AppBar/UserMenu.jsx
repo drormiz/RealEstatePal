@@ -1,4 +1,5 @@
-import { LightMode, Logout, ModeNight, LocalDrinkRounded, PlusOne } from '@mui/icons-material';
+import { LightMode, Logout, ModeNight, LocalDrinkRounded, PlusOne }  from '@mui/icons-material';
+import GroupsIcon from '@mui/icons-material/Groups';
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, useTheme } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -50,6 +51,10 @@ const UserMenu = () => {
         navigate('/add-purchase-group');
     };
 
+    const navigateToPurchaseGroupFeed = () => {
+        navigate('/purchase-groups-feed');
+    };
+
     return (
         <>
             <Tooltip title="Account settings">
@@ -69,6 +74,12 @@ const UserMenu = () => {
                         {<PlusOne/>}
                     </ListItemIcon>
                     Add purchase group
+                </MenuItem>
+                <MenuItem onClick={navigateToPurchaseGroupFeed}>
+                <ListItemIcon style={{ marginRight: '3px' }}>
+                        {<GroupsIcon/>}
+                    </ListItemIcon>
+                    Purchase groups
                 </MenuItem>
                 <MenuItem onClick={toggleColorMode}>
                     <ListItemIcon>
