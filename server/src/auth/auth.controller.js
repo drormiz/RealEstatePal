@@ -8,23 +8,22 @@ import { OAuth2Client } from 'google-auth-library';
 
 const findUserByUsername = async username => await UserModel.findOne({ username });
 
+const findUserByEmail = async email => await UserModel.findOne({ email });
+
 export const registerUser = async ({ body }, res, next) => {
     try {
         const user = await findUserByUsername(body.username);
+        const email = await findUserByEmail(body.email);
 
-        if (!!user) {
-            throw createHttpError(406, 'Username already in use')
-        }
-
+        if (!!user) throw createHttpError(406, 'Username already in use')
+        if (!!email) throw createHttpError(406, 'Email already in use')
+            
         body.name = body.name.replace(/\s+/g, ' ').trim().toLowerCase().split(' ').map(x => _.upperFirst(x)).join(' ');
         const newUser = new UserModel(body);
         await newUser.save();
 
         return res.status(200).json(newUser);
     } catch (error) {
-        if (error.code === 11000) {
-            return res.status(406).json({ error: 'Username already in use' });
-        }
         next(error)
     }
 };

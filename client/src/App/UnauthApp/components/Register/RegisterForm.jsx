@@ -21,9 +21,9 @@ const RegisterForm = () => {
             navigate('/login');
             toast.success("Registered User Successfully!");
         },
-        onError: ({ response: { data: { message } } }) => {
-            toast.error(message);
-        }
+        onError: (error) => {
+            toast.error(error.response.data); 
+        },
     });
 
     return (
