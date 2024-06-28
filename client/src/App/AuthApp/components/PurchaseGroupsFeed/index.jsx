@@ -16,11 +16,13 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from 'react-router-dom';
 import { useUser } from "../../contexts/UserContext";
 import { getClient } from "../../../../axios";
 
 const PurchaseGroupsFeed = () => {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [purchaseGroups, setPurchaseGroups] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -46,17 +48,18 @@ const PurchaseGroupsFeed = () => {
     group.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDeleteGroup = (groupId) => {
-    // Implement delete functionality here
-    console.log("Deleting group with ID:", groupId);
-    // Close the dialog after deletion
+  const handleDeleteGroup = async (groupId) => {
+    try {
+      await getClient().delete(`api/purchaseGroups/${groupId}`);
+      setPurchaseGroups((prevGroups) => prevGroups.filter((group) => group._id !== groupId));
+    } catch (error) {
+      console.error("Error deleting purchase group:", error);
+    }
     setOpenDeleteDialog(false);
   };
 
   const handleEditGroup = (group) => {
-    // Implement edit functionality here
-    console.log("Editing group:", group);
-    // Optionally, navigate to edit form or handle in-place editing
+    navigate('/add-purchase-group', { state: { group } });
   };
 
   const handleOpenDeleteDialog = (group) => {
@@ -95,32 +98,36 @@ const PurchaseGroupsFeed = () => {
                   </Typography>
                 </div>
 
-                <Grid container justifyContent="space-between" alignItems="center">
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    onClick={() => {
-                      // Implement action for view group button if needed
-                    }}
-                    style={{ marginTop: "10px" }}
-                  >
-                    View Group
-                  </Button>
-                  <div>
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={() => {}}
+                      style={{ marginTop: "10px" }}
+                    >
+                      View Group
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
                     <IconButton
                       onClick={() => handleOpenDeleteDialog(group)}
                       color="error"
+                      style={{ width: "100%" }}
                     >
                       <DeleteIcon />
                     </IconButton>
+                  </Grid>
+                  <Grid item xs={6}>
                     <IconButton
                       onClick={() => handleEditGroup(group)}
                       color="inherit"
+                      style={{ width: "100%" }}
                     >
                       <EditIcon />
                     </IconButton>
-                  </div>
+                  </Grid>
                 </Grid>
               </CardContent>
             </Card>
