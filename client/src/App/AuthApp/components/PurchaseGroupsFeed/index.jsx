@@ -72,67 +72,73 @@ const PurchaseGroupsFeed = () => {
   };
 
   return (
-    <Container maxWidth="md" style={{ marginTop: "20px" }}>
-      <TextField
-        label="Search Purchase Groups"
-        variant="outlined"
-        fullWidth
-        margin="normal"
-        value={searchTerm}
-        onChange={handleSearchChange}
-        InputProps={{
-          startAdornment: <SearchIcon />,
-        }}
-      />
+    <Container maxWidth="lg" style={{ marginTop: "20px" }}>
       <Grid container spacing={3}>
-        {filteredGroups.map((group) => (
-          <Grid item key={group._id} xs={12} sm={6} md={4}>
-            <Card sx={{ height: "100%" }}>
-              <CardContent>
-                <div>
-                  <Typography variant="h5" component="div" gutterBottom>
-                    {group.name}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {group.description}
-                  </Typography>
-                </div>
+        <Grid item xs={12} md={9}>
+          <Grid container spacing={3}>
+            {filteredGroups.map((group) => (
+              <Grid item key={group._id} xs={12} sm={6} md={4}>
+                <Card sx={{ height: "100%" }}>
+                  <CardContent>
+                    <div>
+                      <Typography variant="h5" component="div" gutterBottom>
+                        {group.name}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {group.description}
+                      </Typography>
+                    </div>
 
-                <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={() => {}}
-                      style={{ marginTop: "10px" }}
-                    >
-                      View Group
-                    </Button>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <IconButton
-                      onClick={() => handleOpenDeleteDialog(group)}
-                      color="error"
-                      style={{ width: "100%" }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <IconButton
-                      onClick={() => handleEditGroup(group)}
-                      color="inherit"
-                      style={{ width: "100%" }}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
+                    <Grid container spacing={1}>
+                      <Grid item xs={12}>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          fullWidth
+                          onClick={() => {}}
+                          style={{ marginTop: "10px" }}
+                        >
+                          View Group
+                        </Button>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <IconButton
+                          onClick={() => handleOpenDeleteDialog(group)}
+                          color="error"
+                          style={{ width: "100%" }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <IconButton
+                          onClick={() => handleEditGroup(group)}
+                          color="inherit"
+                          style={{ width: "100%" }}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
-        ))}
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <TextField
+            label="Search Purchase Groups"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={handleSearchChange}
+            InputProps={{
+              startAdornment: <SearchIcon />,
+            }}
+            sx={{ mb: 2 }}
+          />
+        </Grid>
       </Grid>
 
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
