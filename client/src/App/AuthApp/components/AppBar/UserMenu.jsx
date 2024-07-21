@@ -53,6 +53,11 @@ const UserMenu = () => {
     closeMenu();
   };
 
+  const navigateToAddProperty = () => {
+    navigate('/add-property');
+    closeMenu();
+  };
+
   const navigateToPurchaseGroupFeed = () => {
     navigate('/purchase-groups-feed');
     closeMenu();
@@ -83,6 +88,12 @@ const UserMenu = () => {
             <GroupsIcon />
           </ListItemIcon>
           Purchase groups
+        </MenuItem>
+        <MenuItem onClick={navigateToAddProperty}>
+          <ListItemIcon style={{ marginRight: '3px' }}>
+            <PlusOne />
+          </ListItemIcon>
+          Add property
         </MenuItem>
         <MenuItem onClick={toggleColorMode}>
           <ListItemIcon>
