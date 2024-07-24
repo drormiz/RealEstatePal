@@ -13,8 +13,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getClient } from "../../../../axios";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty"; // Add this for pending
 import { toast } from "react-toastify";
-import { useUser } from "../../contexts/UserContext"; 
+import { useUser } from "../../contexts/UserContext";
 
 interface PurchaseGroup {
   _id: string;
@@ -33,7 +34,7 @@ interface PurchaseGroup {
       email: string;
     };
   }[];
-  owner: string; 
+  owner: string;
 }
 
 const ViewPurchaseGroup: React.FC = () => {
@@ -94,6 +95,16 @@ const ViewPurchaseGroup: React.FC = () => {
     </Typography>
   );
 
+  const findUserRequest = () => {
+    if (group) {
+      const userRequest = group.purchaseGroupRequests.find(
+        (request) => request.user._id === user._id
+      );
+      return userRequest;
+    }
+    return null;
+  };
+
   if (!group) {
     return <Typography variant="h6">Loading...</Typography>;
   }
@@ -103,6 +114,7 @@ const ViewPurchaseGroup: React.FC = () => {
   );
 
   const isCurrentUserOwner = group.owner === user._id;
+  const userRequest = findUserRequest();
 
   return (
     <Container maxWidth="md" style={{ marginTop: "20px" }}>
@@ -114,6 +126,31 @@ const ViewPurchaseGroup: React.FC = () => {
           <Typography variant="body1" paragraph>
             {group.description}
           </Typography>
+          {userRequest && (
+            <Typography
+              variant="body1"
+              style={{
+                color: userRequest.status === "pending" ? "orange" : "red",
+              }}
+            >
+              {userRequest.status === "pending" ? (
+                <>
+                  <HourglassEmptyIcon
+                    style={{ verticalAlign: "middle", marginRight: "8px" }}
+                  />
+                  Your request is pending approval.
+                </>
+              ) : userRequest.status === "rejected" ? (
+                <>
+                  <HighlightOffIcon
+                    style={{ verticalAlign: "middle", marginRight: "8px" }}
+                  />
+                  Your request was rejected by the Admin of the group.
+                </>
+              ) : null}
+            </Typography>
+          )}
+
           <Typography variant="h6">Members:</Typography>
           <Grid container spacing={2}>
             {group.members.map((member) => (
@@ -141,12 +178,8 @@ const ViewPurchaseGroup: React.FC = () => {
                         {renderProperty("Requested by", request.user.name)}
                         {renderProperty("Username", request.user.username)}
                         {renderProperty("Email", request.user.email)}
-                        {/* Divider for separation */}
                         <Divider style={{ margin: "10px 0" }} />
-                        {renderProperty(
-                          "Description",
-                          request.description
-                        )}
+                        {renderProperty("Description", request.description)}
                         {renderProperty(
                           "Price to Invest",
                           request.priceToInvest
@@ -165,10 +198,7 @@ const ViewPurchaseGroup: React.FC = () => {
                             <IconButton
                               color="primary"
                               onClick={() =>
-                                handleStatusChange(
-                                  request._id,
-                                  "approved"
-                                )
+                                handleStatusChange(request._id, "approved")
                               }
                             >
                               <CheckCircleOutlineIcon />
@@ -178,10 +208,7 @@ const ViewPurchaseGroup: React.FC = () => {
                             <IconButton
                               color="error"
                               onClick={() =>
-                                handleStatusChange(
-                                  request._id,
-                                  "rejected"
-                                )
+                                handleStatusChange(request._id, "rejected")
                               }
                             >
                               <HighlightOffIcon />
@@ -195,6 +222,7 @@ const ViewPurchaseGroup: React.FC = () => {
               </Grid>
             </>
           )}
+
           <Grid container spacing={2} style={{ marginTop: "20px" }}>
             <Grid item>
               <Button
