@@ -1,37 +1,46 @@
-import { Schema, model } from 'mongoose';
-import { hashPassword } from '../services/hashPassword.js';
+import mongoose, { Schema, model } from "mongoose";
+import { hashPassword } from "../services/hashPassword.js";
 
-const UserSchema = new Schema({
+const UserSchema = new Schema(
+  {
     name: {
-        type: String,
-        require: true,
+      type: String,
+      require: true,
     },
     username: {
-        type: String,
-        require: true,
-        unique: true,
+      type: String,
+      require: true,
+      unique: true,
     },
     password: {
-        type: String,
-        require: true,
-        length: { min: 8 },
+      type: String,
+      require: true,
+      length: { min: 8 },
     },
-    email: {type: String},
-    image: {type: String},
+    email: { type: String },
+    image: { type: String },
     refreshTokens: {
-        type: [String], default: []
-    }
-}, { timestamps: true });
+      type: [String],
+      default: [],
+    },
+    purchaseGroupRequests: {
+      type: [mongoose.Schema.Types.ObjectId],
+      default: [],
+      ref: "PurchaseGroupRequest",
+    },
+  },
+  { timestamps: true }
+);
 
-UserSchema.pre('save', async function (next) {
-    const user = this;
+UserSchema.pre("save", async function (next) {
+  const user = this;
 
-    if (!user.isModified('password')) {
-        return next();
-    }
+  if (!user.isModified("password")) {
+    return next();
+  }
 
-    user.password = await hashPassword(user.password)
-    next();
+  user.password = await hashPassword(user.password);
+  next();
 });
 
-export const UserModel = model('Users', UserSchema);
+export const UserModel = model("User", UserSchema);
