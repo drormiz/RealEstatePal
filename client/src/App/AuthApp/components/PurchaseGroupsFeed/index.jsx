@@ -12,11 +12,14 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
+  Box,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useNavigate } from 'react-router-dom';
+import AddIcon from "@mui/icons-material/Add";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts/UserContext";
 import { getClient } from "../../../../axios";
 
@@ -27,11 +30,14 @@ const PurchaseGroupsFeed = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentGroup, setCurrentGroup] = useState(null);
+  console.log("purchaseGroups", purchaseGroups);
+  console.log("currentGroup", currentGroup);
+  console.log("user", user);
 
   useEffect(() => {
     const fetchPurchaseGroups = async () => {
       try {
-        const response = await getClient().get(`api/purchaseGroups`);
+        const response = await getClient().get("api/purchaseGroups");
         setPurchaseGroups(response.data);
       } catch (error) {
         console.error("Error fetching purchase groups:", error);
@@ -50,8 +56,10 @@ const PurchaseGroupsFeed = () => {
 
   const handleDeleteGroup = async (groupId) => {
     try {
-      await getClient().delete(`api/purchaseGroups/${groupId}`);
-      setPurchaseGroups((prevGroups) => prevGroups.filter((group) => group._id !== groupId));
+      await getClient().delete('api/purchaseGroups/${groupId}');
+      setPurchaseGroups((prevGroups) =>
+        prevGroups.filter((group) => group._id !== groupId)
+      );
     } catch (error) {
       console.error("Error deleting purchase group:", error);
     }
@@ -59,7 +67,7 @@ const PurchaseGroupsFeed = () => {
   };
 
   const handleEditGroup = (group) => {
-    navigate('/add-purchase-group', { state: { group } });
+    navigate("/add-purchase-group", { state: { group } });
   };
 
   const handleOpenDeleteDialog = (group) => {
@@ -71,6 +79,14 @@ const PurchaseGroupsFeed = () => {
     setOpenDeleteDialog(false);
   };
 
+  const handleJoinGroup = (group) => {
+    navigate("/join-purchase-group", { state: { group } });
+  };
+
+  const isUserInGroup = (group) => {
+    return group.members.includes(user._id);
+  };
+
   return (
     <Container maxWidth="lg" style={{ marginTop: "20px" }}>
       <Grid container spacing={3}>
@@ -78,49 +94,85 @@ const PurchaseGroupsFeed = () => {
           <Grid container spacing={3}>
             {filteredGroups.map((group) => (
               <Grid item key={group._id} xs={12} sm={6} md={4}>
-                <Card sx={{ height: "100%" }}>
-                  <CardContent>
-                    <div>
-                      <Typography variant="h5" component="div" gutterBottom>
-                        {group.name}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {group.description}
-                      </Typography>
-                    </div>
-
-                    <Grid container spacing={1}>
-                      <Grid item xs={12}>
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          fullWidth
-                          onClick={() => {}}
-                          style={{ marginTop: "10px" }}
-                        >
-                          View Group
-                        </Button>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <IconButton
-                          onClick={() => handleOpenDeleteDialog(group)}
-                          color="error"
-                          style={{ width: "100%" }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <IconButton
-                          onClick={() => handleEditGroup(group)}
-                          color="inherit"
-                          style={{ width: "100%" }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Grid>
-                    </Grid>
+                <Card
+                  sx={{
+                    height: "100%",
+                    position: "relative",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  {!isUserInGroup(group) && (
+                    <IconButton
+                      onClick={() => handleJoinGroup(group)}
+                      color="primary"
+                      style={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        zIndex: 1,
+                      }}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  )}
+                  {isUserInGroup(group) && (
+                    <IconButton
+                      color="primary"
+                      style={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        zIndex: 1,
+                      }}
+                      disabled
+                    >
+                      <CheckCircleIcon />
+                    </IconButton>
+                  )}
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography variant="h5" component="div" gutterBottom>
+                      {group.name}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {group.description}
+                    </Typography>
                   </CardContent>
+                  {group.owner === user._id && (
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      px={2}
+                      pb={1}
+                    >
+                      <IconButton
+                        onClick={() => handleOpenDeleteDialog(group)}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleEditGroup(group)}
+                        color="inherit"
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Box>
+                  )}
+                  <Box p={2}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={() =>
+                        navigate("/view-purchase-group", {
+                          state: { groupId: group._id },
+                        })
+                      }
+                    >
+                      View Group
+                    </Button>
+                  </Box>
                 </Card>
               </Grid>
             ))}
