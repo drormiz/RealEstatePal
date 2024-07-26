@@ -1,4 +1,4 @@
-import { LightMode, Logout, ModeNight, PlusOne } from '@mui/icons-material';
+import { LightMode, Logout, ModeNight, PlusOne, Info } from '@mui/icons-material';
 import GroupsIcon from '@mui/icons-material/Groups';
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, useTheme } from '@mui/material';
 import { useQueryClient } from '@tanstack/react-query';
@@ -63,6 +63,11 @@ const UserMenu = () => {
     closeMenu();
   };
 
+  const navigateToInfo = () => {
+    navigate('/info');
+    closeMenu();
+  };
+
   return (
     <>
       <Tooltip title="Account settings">
@@ -94,6 +99,12 @@ const UserMenu = () => {
             <PlusOne />
           </ListItemIcon>
           Add property
+        </MenuItem>
+        <MenuItem onClick={navigateToInfo}>
+          <ListItemIcon style={{ marginRight: '3px' }}>
+            <Info />
+          </ListItemIcon>
+          Info
         </MenuItem>
         <MenuItem onClick={toggleColorMode}>
           <ListItemIcon>

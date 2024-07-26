@@ -5,6 +5,7 @@ import PurchaseGroupsFeed from "../PurchaseGroupsFeed/index";
 import AddProperty from "../AddEditProperty/AddProperty";
 import JoinPurchaseGroupForm from "../JoinPurchaseGroup/index";
 import ViewPurchaseGroup from "../ViewPurchaseGroup/index";
+import Info from "../Info/index";
 
 const AuthenticatedRoutes = () => (
   <Routes>
@@ -28,6 +29,9 @@ const AuthenticatedRoutes = () => (
     </Route>
     <Route path="/view-purchase-group">
       <Route index element={<ViewPurchaseGroup />} />
+    </Route>
+    <Route path="/info">
+      <Route index element={<Info />} />
     </Route>
     <Route path="*" element={<Navigate to="/" />} />
   </Routes>
