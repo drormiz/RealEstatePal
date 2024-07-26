@@ -34,7 +34,20 @@ interface PurchaseGroup {
       email: string;
     };
   }[];
-  owner: string;
+  owner: {
+    _id: string;
+    name: string;
+    username: string;
+    email: string;
+  };
+  property: Property;
+}
+
+interface Property {
+  _id: string;
+  name: string;
+  description: string;
+  image: string;
 }
 
 const ViewPurchaseGroup: React.FC = () => {
@@ -126,6 +139,38 @@ const ViewPurchaseGroup: React.FC = () => {
           <Typography variant="body1" paragraph>
             {group.description}
           </Typography>
+          <Typography variant="h6" gutterBottom>
+            Owner Details:
+          </Typography>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card>
+              <CardContent>
+                {renderProperty("Name", group.owner.name)}
+                {renderProperty("Username", group.owner.username)}
+                {renderProperty("Email", group.owner.email)}
+              </CardContent>
+            </Card>
+          </Grid>
+          {group.property && (
+            <>
+              <Typography variant="h6" gutterBottom paddingTop={5}>
+                Property Details:
+              </Typography>
+              <Typography variant="body1">
+                Name: {group.property.name}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Description: {group.property.description}
+              </Typography>
+              {group.property.image && (
+                <img
+                  src={group.property.image}
+                  alt={group.property.name}
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                />
+              )}
+            </>
+          )}
           {userRequest && (
             <Typography
               variant="body1"
@@ -151,7 +196,9 @@ const ViewPurchaseGroup: React.FC = () => {
             </Typography>
           )}
 
-          <Typography variant="h6">Members:</Typography>
+          <Typography variant="h6" paddingTop={5}>
+            Members:
+          </Typography>
           <Grid container spacing={2}>
             {group.members.map((member) => (
               <Grid item xs={12} sm={6} md={4} key={member._id}>

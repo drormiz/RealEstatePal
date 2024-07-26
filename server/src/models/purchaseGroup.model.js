@@ -25,8 +25,8 @@ const PurchaseGroupSchema = new Schema(
     property: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Property",
+      unique: true,
     },
-
   },
   { timestamps: true }
 );

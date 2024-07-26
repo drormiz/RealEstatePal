@@ -1,10 +1,15 @@
 import { PurchaseGroupModel } from "../../models/purchaseGroup.model.js";
+import { PropertyModel } from "../../models/property.model.js";
 import { PurchaseGroupRequestModel } from "../../models/purchaseGroupRequest.model.js";
 import { UserModel } from "../../models/user.model.js";
 
 const populatePurchaseGroup = [
   {
     path: "members",
+    select: "name username email _id",
+  },
+  {
+    path: "owner",
     select: "name username email _id",
   },
   {
@@ -15,6 +20,10 @@ const populatePurchaseGroup = [
       select: "name username email _id",
     },
     select: "priceToInvest description status",
+  },
+  {
+    path: "property",
+    select: "_id name description image",
   },
 ];
 
@@ -56,6 +65,12 @@ export const createPurchaseGroup = async (req, res) => {
 
     const newPurchaseGroup = new PurchaseGroupModel(purchaseGroupModelData);
     const savedPurchaseGroup = await newPurchaseGroup.save();
+
+    await PropertyModel.findByIdAndUpdate(
+      req.body.property,
+      { purchaseGroup: savedPurchaseGroup._id },
+      { new: true }
+    );
 
     res.status(201).json(savedPurchaseGroup);
   } catch (error) {
