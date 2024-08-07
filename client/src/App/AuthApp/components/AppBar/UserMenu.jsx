@@ -4,9 +4,9 @@ import {
   ModeNight,
   PlusOne,
   Info,
-} from "@mui/icons-material";
-import GroupsIcon from "@mui/icons-material/Groups";
-import PersonIcon from "@mui/icons-material/Person";
+  AccountCircle
+} from '@mui/icons-material';
+import GroupsIcon from '@mui/icons-material/Groups';
 import {
   Avatar,
   IconButton,
@@ -14,24 +14,25 @@ import {
   Menu,
   MenuItem,
   Tooltip,
-  useTheme,
-} from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import stringToColor from "string-to-color";
-import { useColorMode } from "../../../../Providers/ThemeProvider";
-import { useUser } from "../../../../Providers/UserProvider";
-import { logoutUserFn } from "../../../../axios/auth";
+  Typography,
+  useTheme
+} from '@mui/material';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import stringToColor from 'string-to-color';
+import { useColorMode } from '../../../../Providers/ThemeProvider';
+import { useUser } from '../../../../Providers/UserProvider';
+import { logoutUserFn } from '../../../../axios/auth';
 
-const getInitials = (fullName) =>
-  fullName === ""
-    ? ""
+const getInitials = fullName =>
+  fullName === ''
+    ? ''
     : fullName
         .trim()
         .split(/\s+/)
-        .map((name) => name[0].toUpperCase())
-        .join("")
+        .map(name => name[0].toUpperCase())
+        .join('')
         .slice(0, 3);
 
 const UserMenu = () => {
@@ -39,7 +40,7 @@ const UserMenu = () => {
   const navigate = useNavigate();
   const { toggleColorMode } = useColorMode();
   const {
-    palette: { mode },
+    palette: { mode, primary }
   } = useTheme();
   const { user, setUser } = useUser();
   const queryCache = useQueryClient().getQueryCache();
@@ -51,17 +52,17 @@ const UserMenu = () => {
       console.log(e.message);
     }
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("refreshToken");
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
     setUser(null);
     queryCache.clear();
 
-    navigate("/login");
+    navigate('/login');
     closeMenu();
   };
 
-  const openMenu = (event) => {
+  const openMenu = event => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -70,92 +71,109 @@ const UserMenu = () => {
   };
 
   const navigateToUserProfile = () => {
-    navigate("/profile");
+    navigate('/profile');
     closeMenu();
   };
 
   const navigateToAddPurchaseGroupPage = () => {
-    navigate("/add-purchase-group");
+    navigate('/add-purchase-group');
     closeMenu();
   };
 
   const navigateToAddProperty = () => {
-    navigate("/add-property");
+    navigate('/add-property');
     closeMenu();
   };
 
   const navigateToPurchaseGroupFeed = () => {
-    navigate("/purchase-groups-feed");
+    navigate('/purchase-groups-feed');
     closeMenu();
   };
 
   const navigateToInfo = () => {
-    navigate("/info");
+    navigate('/info');
     closeMenu();
   };
 
   return (
     <>
-      <Tooltip title="Account settings">
+      <Tooltip title='Account settings'>
         <IconButton onClick={openMenu}>
           <Avatar
-            src={user.image || ""}
+            src={user.image || ''}
             sx={{
-              bgcolor: !user.image ? stringToColor(user.name) : "transparent",
+              bgcolor: !user.image ? stringToColor(user.name) : primary.main,
               width: 60,
-              height: 60,
-            }}
-          >
+              height: 60
+            }}>
             {!user.image && getInitials(user.name)}
           </Avatar>
         </IconButton>
       </Tooltip>
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={closeMenu}>
-        <MenuItem onClick={navigateToUserProfile}>
-          <ListItemIcon style={{ marginRight: "3px" }}>
-            <PersonIcon />
-          </ListItemIcon>
-          Profile
-        </MenuItem>
-        <MenuItem onClick={navigateToAddPurchaseGroupPage}>
-          <ListItemIcon style={{ marginRight: "3px" }}>
-            <PlusOne />
-          </ListItemIcon>
-          Add purchase group
-        </MenuItem>
-        <MenuItem onClick={navigateToPurchaseGroupFeed}>
-          <ListItemIcon style={{ marginRight: "3px" }}>
-            <GroupsIcon />
-          </ListItemIcon>
-          Purchase groups
-        </MenuItem>
-        <MenuItem onClick={navigateToAddProperty}>
-          <ListItemIcon style={{ marginRight: "3px" }}>
-            <PlusOne />
-          </ListItemIcon>
-          Add property
-        </MenuItem>
-        <MenuItem onClick={navigateToInfo}>
-          <ListItemIcon style={{ marginRight: "3px" }}>
-            <Info />
-          </ListItemIcon>
-          Info
-        </MenuItem>
-        <MenuItem onClick={toggleColorMode}>
+        <MenuItem
+          onClick={navigateToUserProfile}
+          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
           <ListItemIcon>
-            {mode === "light" ? (
-              <LightMode fontSize="small" />
+            <AccountCircle color='primary' />
+          </ListItemIcon>
+          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            Profile
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          onClick={navigateToAddPurchaseGroupPage}
+          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
+          <ListItemIcon>
+            <PlusOne color='primary' />
+          </ListItemIcon>
+          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            Add Purchase Group
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          onClick={navigateToPurchaseGroupFeed}
+          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
+          <ListItemIcon>
+            <GroupsIcon color='primary' />
+          </ListItemIcon>
+          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            Purchase Groups
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          onClick={navigateToInfo}
+          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
+          <ListItemIcon>
+            <Info color='primary' />
+          </ListItemIcon>
+          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            Info
+          </Typography>
+        </MenuItem>
+        <MenuItem
+          onClick={toggleColorMode}
+          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
+          <ListItemIcon>
+            {mode === 'light' ? (
+              <LightMode color='primary' />
             ) : (
-              <ModeNight fontSize="small" />
+              <ModeNight color='primary' />
             )}
           </ListItemIcon>
-          Change Color Mode
+          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            Change Color Mode
+          </Typography>
         </MenuItem>
-        <MenuItem onClick={logoutUser}>
+        <MenuItem
+          onClick={logoutUser}
+          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Logout color='primary' />
           </ListItemIcon>
-          Logout
+          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            Logout
+          </Typography>
         </MenuItem>
       </Menu>
     </>
