@@ -13,7 +13,18 @@ const PropertySchema = new Schema(
     },
     description: { type: String },
     price: { type: Number },
-    image: { type: String },
+    meters: { type: Number },
+    // loction: {type: String},
+    type: {
+      type: String,
+      enum: ['קוטג', 'דו קומתי', 'אחר', 'בית קרקע'],
+    },
+    numberOfRooms: {
+      type: Number
+    },
+    floor: {type: Number},
+    elevator: {type: Boolean},
+    images: { type: [String] },
     purchaseGroup: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "PurchaseGroup",
