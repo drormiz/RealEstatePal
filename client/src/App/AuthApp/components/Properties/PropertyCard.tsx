@@ -2,52 +2,69 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
-import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import { Edit } from '@mui/icons-material';
+import { ArrowForward, Edit } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
+import Carousel from 'react-material-ui-carousel';
 import { useUser } from '../../contexts/UserContext';
 
 const PropertyCard = ({ property }) => {
-  const { user, setUser } = useUser();
+  const { user } = useUser();
 
   const isUserOwner = user._id === property.owner;
 
   return (
-    <Card sx={{ display: 'flex', width: '100%', margin: '20px 0' }}>
-      <CardMedia
-        component='img'
-        sx={{ width: 200 }}
-        image={property.image}
-        alt={property.name}
-      />
-      <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <CardContent>
-          <Typography gutterBottom variant='h5' component='div'>
-            {property.name}
-          </Typography>
-          <Typography variant='body2' color='text.secondary'>
-            {property.description}
-          </Typography>
-          <Typography variant='h6' color='text.primary'>
-            ${property.price}
-          </Typography>
-        </CardContent>
-        <CardActions sx={{ marginTop: 'auto', justifyContent: 'flex-end' }}>
-          {isUserOwner && (
-            <IconButton
-              component={Link}
-              to={`/properties/${property._id}`}
-              size='small'
-              color='primary'>
-              <Edit />
-            </IconButton>
-          )}
-        </CardActions>
+    <Card
+      sx={{
+        width: 300,
+        display: 'flex',
+        flexDirection: 'column',
+        margin: '20px 0'
+      }}>
+      {/* Carousel of property images */}
+      <Box sx={{ height: 200 }}>
+        <Carousel
+          sx={{ height: '100%' }}
+          indicators={true}
+          navButtonsAlwaysVisible={true}>
+          {property.images.map((image, index) => {
+            console.log(image);
+
+            return (
+              <img
+                key={index}
+                src={image}
+                alt={`property-image-${index}`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            );
+          })}
+        </Carousel>
       </Box>
+
+      <CardContent sx={{ flex: 1 }}>
+        <Typography gutterBottom variant='h6' component='div' fontWeight='bold'>
+          {property.name}
+        </Typography>
+        <Typography variant='body2' color='text.secondary'>
+          {`Meters: ${property.meters} | Rooms: ${property.numberOfRooms} | Type: ${property.type}`}
+        </Typography>
+        <Typography variant='h6' color='text.primary'>
+          ${property.price}
+        </Typography>
+      </CardContent>
+
+      <CardActions sx={{ justifyContent: 'flex-end' }}>
+        <IconButton
+          component={Link}
+          to={`/properties/${property._id}`}
+          size='small'
+          color='primary'>
+          <ArrowForward />
+        </IconButton>
+      </CardActions>
     </Card>
   );
 };
