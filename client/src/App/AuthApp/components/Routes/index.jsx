@@ -8,11 +8,12 @@ import ViewPurchaseGroup from '../ViewPurchaseGroup/index';
 import Info from "../Info/index";
 import Properties from '../Properties';
 import EditProperty from '../AddEditProperty/EditProperty';
+import HomePage from '../HomePage/index';
 
 const AuthenticatedRoutes = () => (
   <Routes>
     <Route path='/'>
-      <Route index element={<>hi</>} />
+      <Route index element={<HomePage />} />
     </Route>
     <Route path='/profile'>
       <Route index element={<Profile />} />
