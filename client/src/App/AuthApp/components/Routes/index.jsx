@@ -2,12 +2,12 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import Profile from '../Profile/Profile';
 import AddGroup from '../AddEditGroup/AddPurchaseGroup';
 import PurchaseGroupsFeed from '../PurchaseGroupsFeed/index';
-import AddProperty from '../AddEditProperty/AddProperty';
+import AddProperty from '../PropertyForm/AddProperty';
+import EditProperty from '../PropertyForm/EditProperty';
 import JoinPurchaseGroupForm from '../JoinPurchaseGroup/index';
 import ViewPurchaseGroup from '../ViewPurchaseGroup/index';
 import Info from "../Info/index";
 import Properties from '../Properties';
-import EditProperty from '../AddEditProperty/EditProperty';
 import HomePage from '../HomePage/index';
 
 const AuthenticatedRoutes = () => (
@@ -26,6 +26,9 @@ const AuthenticatedRoutes = () => (
     </Route>
     <Route path='/add-property'>
       <Route index element={<AddProperty />} />
+    </Route>
+    <Route  path='/edit-property/:propertyId'>
+      <Route index element={<EditProperty />} />
     </Route>
     <Route path='/properties/:id'>
       <Route index element={<EditProperty />} />

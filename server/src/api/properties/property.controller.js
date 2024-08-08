@@ -10,6 +10,17 @@ export const getProperties = async (req, res, next) => {
   }
 };
 
+export const getProperty = async (req, res, next) => {
+  try {
+    const propertyId = req.params.id;
+    const property = await PropertyModel.findById(propertyId);
+
+    return res.json(property);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createProperty = async (req, res) => {
   try {
     // Create a new PurchaseGroupModel instance based on the request body

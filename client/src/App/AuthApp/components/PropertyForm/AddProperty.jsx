@@ -1,6 +1,6 @@
 import React from 'react';
 import { getClient } from '../../../../axios';
-import AddEditProperty from './AddEditProperty';
+import PropertyBaseForm from './PropertyBaseForm';
 
 const AddProperty = () => {
   const onSubmitHandler = async (newValue) => {
@@ -8,7 +8,7 @@ const AddProperty = () => {
   };
 
   return (
-    <AddEditProperty onSubmitHandler={onSubmitHandler}></AddEditProperty>
+    <PropertyBaseForm onSubmitHandler={onSubmitHandler}></PropertyBaseForm>
   );
 };
 
