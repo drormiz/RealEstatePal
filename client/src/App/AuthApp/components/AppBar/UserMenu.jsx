@@ -1,21 +1,46 @@
-import { LightMode, Logout, ModeNight, PlusOne, Info } from '@mui/icons-material';
-import GroupsIcon from '@mui/icons-material/Groups';
-import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Tooltip, useTheme } from '@mui/material';
-import { useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import stringToColor from 'string-to-color';
-import { useColorMode } from '../../../../Providers/ThemeProvider';
-import { useUser } from '../../../../Providers/UserProvider';
-import { logoutUserFn } from '../../../../axios/auth';
+import {
+  LightMode,
+  Logout,
+  ModeNight,
+  PlusOne,
+  Info,
+} from "@mui/icons-material";
+import GroupsIcon from "@mui/icons-material/Groups";
+import PersonIcon from "@mui/icons-material/Person";
+import {
+  Avatar,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Tooltip,
+  useTheme,
+} from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import stringToColor from "string-to-color";
+import { useColorMode } from "../../../../Providers/ThemeProvider";
+import { useUser } from "../../../../Providers/UserProvider";
+import { logoutUserFn } from "../../../../axios/auth";
 
-const getInitials = fullName => fullName === '' ? '' : fullName.trim().split(/\s+/).map(name => name[0].toUpperCase()).join('').slice(0, 3);
+const getInitials = (fullName) =>
+  fullName === ""
+    ? ""
+    : fullName
+        .trim()
+        .split(/\s+/)
+        .map((name) => name[0].toUpperCase())
+        .join("")
+        .slice(0, 3);
 
 const UserMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const { toggleColorMode } = useColorMode();
-  const { palette: { mode } } = useTheme();
+  const {
+    palette: { mode },
+  } = useTheme();
   const { user, setUser } = useUser();
   const queryCache = useQueryClient().getQueryCache();
 
@@ -26,12 +51,12 @@ const UserMenu = () => {
       console.log(e.message);
     }
 
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     queryCache.clear();
 
-    navigate('/login');
+    navigate("/login");
     closeMenu();
   };
 
@@ -44,27 +69,27 @@ const UserMenu = () => {
   };
 
   const navigateToUserProfile = () => {
-    navigate('/profile');
+    navigate("/profile");
     closeMenu();
   };
 
   const navigateToAddPurchaseGroupPage = () => {
-    navigate('/add-purchase-group');
+    navigate("/add-purchase-group");
     closeMenu();
   };
 
   const navigateToAddProperty = () => {
-    navigate('/add-property');
+    navigate("/add-property");
     closeMenu();
   };
 
   const navigateToPurchaseGroupFeed = () => {
-    navigate('/purchase-groups-feed');
+    navigate("/purchase-groups-feed");
     closeMenu();
   };
 
   const navigateToInfo = () => {
-    navigate('/info');
+    navigate("/info");
     closeMenu();
   };
 
@@ -86,40 +111,42 @@ const UserMenu = () => {
       </Tooltip>
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={closeMenu}>
         <MenuItem onClick={navigateToUserProfile}>
-          <ListItemIcon style={{ marginRight: '3px' }}>
-            <Avatar src={user.image || ""} sx={{ width: 40, height: 40 }}>
-              {!user.image && getInitials(user.name)}
-            </Avatar>
+          <ListItemIcon style={{ marginRight: "3px" }}>
+            <PersonIcon />
           </ListItemIcon>
           Profile
         </MenuItem>
         <MenuItem onClick={navigateToAddPurchaseGroupPage}>
-          <ListItemIcon style={{ marginRight: '3px' }}>
+          <ListItemIcon style={{ marginRight: "3px" }}>
             <PlusOne />
           </ListItemIcon>
           Add purchase group
         </MenuItem>
         <MenuItem onClick={navigateToPurchaseGroupFeed}>
-          <ListItemIcon style={{ marginRight: '3px' }}>
+          <ListItemIcon style={{ marginRight: "3px" }}>
             <GroupsIcon />
           </ListItemIcon>
           Purchase groups
         </MenuItem>
         <MenuItem onClick={navigateToAddProperty}>
-          <ListItemIcon style={{ marginRight: '3px' }}>
+          <ListItemIcon style={{ marginRight: "3px" }}>
             <PlusOne />
           </ListItemIcon>
           Add property
         </MenuItem>
         <MenuItem onClick={navigateToInfo}>
-          <ListItemIcon style={{ marginRight: '3px' }}>
+          <ListItemIcon style={{ marginRight: "3px" }}>
             <Info />
           </ListItemIcon>
           Info
         </MenuItem>
         <MenuItem onClick={toggleColorMode}>
           <ListItemIcon>
-            {mode === 'light' ? <LightMode fontSize="small" /> : <ModeNight fontSize="small" />}
+            {mode === "light" ? (
+              <LightMode fontSize="small" />
+            ) : (
+              <ModeNight fontSize="small" />
+            )}
           </ListItemIcon>
           Change Color Mode
         </MenuItem>

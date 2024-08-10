@@ -107,7 +107,7 @@ const Profile = () => {
               border: "4px solid white",
               boxShadow: "0px 0px 8px rgba(0, 0, 0, 0.2)",
               fontSize: "2.5rem",
-              bgcolor: preview ? "transparent" : stringToColor(user.username),
+              bgcolor: preview ? "transparent" : stringToColor(user.name),
             }}
           >
             {!preview && getInitials(user.name)}
