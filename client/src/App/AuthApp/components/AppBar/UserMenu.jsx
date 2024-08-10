@@ -72,13 +72,24 @@ const UserMenu = () => {
     <>
       <Tooltip title="Account settings">
         <IconButton onClick={openMenu}>
-          <Avatar sx={{ bgcolor: stringToColor(user?.name) }}>{getInitials(user?.name)}</Avatar>
+          <Avatar
+            src={user.image || ""}
+            sx={{
+              bgcolor: !user.image ? stringToColor(user.name) : "transparent",
+              width: 60,
+              height: 60,
+            }}
+          >
+            {!user.image && getInitials(user.name)}
+          </Avatar>
         </IconButton>
       </Tooltip>
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={closeMenu}>
         <MenuItem onClick={navigateToUserProfile}>
           <ListItemIcon style={{ marginRight: '3px' }}>
-            <Avatar />
+            <Avatar src={user.image || ""} sx={{ width: 40, height: 40 }}>
+              {!user.image && getInitials(user.name)}
+            </Avatar>
           </ListItemIcon>
           Profile
         </MenuItem>
