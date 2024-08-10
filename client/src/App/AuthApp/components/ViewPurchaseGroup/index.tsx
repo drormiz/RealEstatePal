@@ -126,7 +126,7 @@ const ViewPurchaseGroup: React.FC = () => {
     (request) => request.status === "pending"
   );
 
-  const isCurrentUserOwner = group.owner === user._id;
+  const isCurrentUserOwner = group.owner._id === user._id;
   const userRequest = findUserRequest();
 
   return (
@@ -139,6 +139,33 @@ const ViewPurchaseGroup: React.FC = () => {
           <Typography variant="body1" paragraph>
             {group.description}
           </Typography>
+
+          {userRequest && (
+            <Typography
+              variant="body1"
+              style={{
+                color: userRequest.status === "pending" ? "orange" : "red",
+                paddingBottom: "16px",
+              }}
+            >
+              {userRequest.status === "pending" ? (
+                <>
+                  <HourglassEmptyIcon
+                    style={{ verticalAlign: "middle", marginRight: "8px" }}
+                  />
+                  Your request is pending approval.
+                </>
+              ) : userRequest.status === "rejected" ? (
+                <>
+                  <HighlightOffIcon
+                    style={{ verticalAlign: "middle", marginRight: "8px" }}
+                  />
+                  Your request was rejected by the Admin of the group.
+                </>
+              ) : null}
+            </Typography>
+          )}
+
           <Typography variant="h6" gutterBottom>
             Owner Details:
           </Typography>
@@ -151,6 +178,7 @@ const ViewPurchaseGroup: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
+
           {group.property && (
             <>
               <Typography variant="h6" gutterBottom paddingTop={5}>
@@ -170,30 +198,6 @@ const ViewPurchaseGroup: React.FC = () => {
                 />
               )}
             </>
-          )}
-          {userRequest && (
-            <Typography
-              variant="body1"
-              style={{
-                color: userRequest.status === "pending" ? "orange" : "red",
-              }}
-            >
-              {userRequest.status === "pending" ? (
-                <>
-                  <HourglassEmptyIcon
-                    style={{ verticalAlign: "middle", marginRight: "8px" }}
-                  />
-                  Your request is pending approval.
-                </>
-              ) : userRequest.status === "rejected" ? (
-                <>
-                  <HighlightOffIcon
-                    style={{ verticalAlign: "middle", marginRight: "8px" }}
-                  />
-                  Your request was rejected by the Admin of the group.
-                </>
-              ) : null}
-            </Typography>
           )}
 
           <Typography variant="h6" paddingTop={5}>

@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import UpdateIcon from "@mui/icons-material/Update";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "../../../../Providers/UserProvider";
-import { addEditGroupFormSchema } from "./validationSchema";
+import { purchaseGroupSchema } from "./validationSchema";
 
 const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
   const { state } = useLocation();
@@ -27,7 +27,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
   const { user } = useUser();
 
   const { register, handleSubmit, setValue, control } = useForm({
-    resolver: zodResolver(addEditGroupFormSchema),
+    resolver: zodResolver(purchaseGroupSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -60,6 +60,8 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
     navigate("/purchase-groups-feed");
   };
 
+  const isUpdateMode = !!state?.group;
+
   return (
     <Card
       sx={{
@@ -72,7 +74,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
     >
       <CardContent>
         <Typography variant="h5" align="center" gutterBottom>
-          {state?.group ? "Update" : "Create"}
+          {isUpdateMode ? "Update" : "Create"}
         </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
@@ -97,42 +99,66 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id="property-label">Property</InputLabel>
-                <Controller
-                  name="property"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      labelId="property-label"
-                      {...field}
-                      label="Property"
-                    >
-                      {properties
-                        .filter(
-                          (property) =>
-                            property.purchaseGroup === undefined ||
-                            property._id === state?.group?.property
-                        )
-                        .map((property) => (
-                          <MenuItem key={property._id} value={property._id}>
-                            {property.name} | {property.description}
-                          </MenuItem>
-                        ))}
-                    </Select>
-                  )}
+              {isUpdateMode ? (
+                <TextField
+                  fullWidth
+                  label={
+                    isUpdateMode ? "Property - cannot be updated" : "Property"
+                  }
+                  value={
+                    isUpdateMode
+                      ? properties.find(
+                          (property) => property._id === state.group.property
+                        )?.name || ""
+                      : ""
+                  }
+                  InputLabelProps={{ shrink: true }}
+                  placeholder="Property"
+                  InputProps={{
+                    readOnly: isUpdateMode, 
+                  }}
+                  sx={{
+                    backgroundColor: isUpdateMode ? "#dddddd" : "inherit",
+                  }}
                 />
-              </FormControl>
+              ) : (
+                <FormControl fullWidth>
+                  <InputLabel id="property-label">Property</InputLabel>
+                  <Controller
+                    name="property"
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        labelId="property-label"
+                        {...field}
+                        label="Property"
+                      >
+                        {properties
+                          .filter(
+                            (property) =>
+                              property.purchaseGroup === undefined ||
+                              property._id === state?.group?.property
+                          )
+                          .map((property) => (
+                            <MenuItem key={property._id} value={property._id}>
+                              {property.name} | {property.description}
+                            </MenuItem>
+                          ))}
+                      </Select>
+                    )}
+                  />
+                </FormControl>
+              )}
             </Grid>
             <Grid item xs={12} sx={{ textAlign: "center" }}>
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
-                startIcon={state?.group ? <UpdateIcon /> : <AddIcon />}
+                startIcon={isUpdateMode ? <UpdateIcon /> : <AddIcon />}
                 sx={{ width: "80%", mt: 2, mb: 2, mx: "auto" }}
               >
-                {state?.group ? "Update" : "Insert"}
+                {isUpdateMode ? "Update" : "Insert"}
               </Button>
             </Grid>
           </Grid>

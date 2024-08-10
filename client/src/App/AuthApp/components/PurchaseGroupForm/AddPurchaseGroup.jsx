@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { getClient } from "../../../../axios";
-import AddEditGroup from "./AddEditPurchaseGroup";
+import PurchaseGroupForm from "./PurchaseGroupForm";
 
-const AddGroup = () => {
+const AddPurchaseGroup = () => {
   const [properties, setProperties] = useState([]);
 
   useEffect(() => {
@@ -27,11 +27,11 @@ const AddGroup = () => {
   };
 
   return (
-    <AddEditGroup
+    <PurchaseGroupForm
       onSubmitHandler={onSubmitHandler}
       properties={properties}
-    ></AddEditGroup>
+    ></PurchaseGroupForm>
   );
 };
 
-export default AddGroup;
+export default AddPurchaseGroup;
