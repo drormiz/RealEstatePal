@@ -133,7 +133,10 @@ export const getPurchaseGroupRequests = async (req, res) => {
       query.group = groupId;
     }
 
-    const requests = await PurchaseGroupRequestModel.find(query).exec();
+    const requests = await PurchaseGroupRequestModel
+      .find(query)
+      .populate('group') 
+      .exec();
 
     if (!requests.length) {
       return res.status(404).json({ message: "No requests found" });
@@ -145,7 +148,6 @@ export const getPurchaseGroupRequests = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
 export const createPurchaseGroupRequest = async (req, res) => {
   try {
     const { _id: userId } = req.user;
@@ -227,16 +229,25 @@ export const deletePurchaseGroupRequest = async (req, res) => {
   const groupRequestId = req.params.id;
 
   try {
-    const deletedGroupRequest =
-      await PurchaseGroupRequestModel.findByIdAndDelete(groupRequestId);
+    const deletedPurchaseGroupRequest = await PurchaseGroupRequestModel.findByIdAndDelete(groupRequestId);
 
-    if (!deletedGroupRequest) {
-      return res.status(404).json({ error: "GroupRequest not found" });
+    if (!deletedPurchaseGroupRequest) {
+      return res.status(404).json({ error: "Group request not found" });
     }
 
-    res.status(200).json(deletedGroupRequest);
+    await UserModel.updateMany(
+      { purchaseGroupRequests: groupRequestId },
+      { $pull: { purchaseGroupRequests: groupRequestId } }
+    );
+
+    await PurchaseGroupModel.updateMany(
+      { purchaseGroupRequests: groupRequestId },
+      { $pull: { purchaseGroupRequests: groupRequestId } }
+    );
+
+    res.status(200).json({ message: "Group request deleted successfully", deletedPurchaseGroupRequest });
   } catch (error) {
-    console.error("Error deleting groupRequest:", error);
+    console.error("Error deleting group request:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
