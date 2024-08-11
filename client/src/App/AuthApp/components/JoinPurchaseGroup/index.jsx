@@ -20,7 +20,7 @@ import { getClient } from "../../../../axios";
 const JoinPurchaseGroupForm = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   const {
     register,
@@ -49,7 +49,18 @@ const JoinPurchaseGroupForm = () => {
         data
       );
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      const newRequestId = response.data._id;
+      if (setUser) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          purchaseGroupRequests: [
+            ...prevUser.purchaseGroupRequests,
+            newRequestId,
+          ],
+        }));
+      }
+
       toast.success("Group request submitted successfully!");
       navigate("/purchase-groups-feed");
     },
