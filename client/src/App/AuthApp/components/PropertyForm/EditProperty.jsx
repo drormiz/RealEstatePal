@@ -7,7 +7,6 @@ const EditProperty = () => {
   const { propertyId } = useParams();
   const [property, setProperty] = useState();
 
-  console.log("dsdsd", propertyId);
   const onSubmitHandler = async(updatedValue) => {
     await getClient().put(`api/properties/${updatedValue._id}`, updatedValue);
   };
