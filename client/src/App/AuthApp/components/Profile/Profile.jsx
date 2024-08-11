@@ -26,7 +26,7 @@ import UpgradeIcon from "@mui/icons-material/Upgrade";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
-import DeleteIcon from "@mui/icons-material/Delete"; 
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const getInitials = (name) => {
   return name
@@ -44,7 +44,7 @@ const Profile = () => {
     name: user.name || "",
     username: user.username || "",
   });
-  const [open, setOpen] = useState(false); 
+  const [open, setOpen] = useState(false);
   const [deleteRequestId, setDeleteRequestId] = useState(null);
 
   useEffect(() => {
@@ -74,16 +74,11 @@ const Profile = () => {
       const response = await uploadRequest(formData);
       const imageUrl = response.data.imageUrl;
 
-      await getClient().put(`api/users/${user._id}`, {
-        ...user,
-        image: imageUrl,
-      });
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ ...user, image: imageUrl })
-      );
-      setUser((prevUser) => ({ ...prevUser, image: imageUrl }));
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const updatedUser = { ...storedUser, image: imageUrl };
+      await getClient().put(`api/users/${storedUser._id}`, updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
       setPreview(imageUrl);
       toast.success("Profile image updated successfully!");
     } catch (error) {
@@ -94,14 +89,26 @@ const Profile = () => {
 
   const handleUpdate = async () => {
     try {
-      const updatedUser = { ...user, ...formState };
-      await getClient().put(`api/users/${user._id}`, updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      const localUser = JSON.parse(localStorage.getItem("user"));
+      const updatedUser = {
+        ...localUser,
+        name: formState.name, 
+        username: formState.username 
+      };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
+      console.log("updatedUser", updatedUser);
+      await getClient().put(`api/users/${user._id}`, updatedUser);
+      
       toast.success("Profile updated successfully!");
     } catch (error) {
-      console.error("Error updating user profile:", error);
-      toast.error("Failed to update profile.");
+      if (error.response.status === 400 || error.response.status === 404) {
+        console.error(
+          "Error updating user profile:",
+          error.response.data.error
+        );
+        toast.error(error.response.data.error);
+      }
     }
   };
 
