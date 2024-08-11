@@ -97,7 +97,6 @@ const Profile = () => {
       };
       localStorage.setItem('user', JSON.stringify(updatedUser));
       setUser(updatedUser);
-      console.log("updatedUser", updatedUser);
       await getClient().put(`api/users/${user._id}`, updatedUser);
       
       toast.success("Profile updated successfully!");
