@@ -53,6 +53,7 @@ const UserMenu = () => {
 
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("refreshToken");
     setUser(null);
     queryCache.clear();
 
