@@ -15,16 +15,16 @@ import { protect } from "../../middlewares/auth.middleware.js";
 
 const router = AsyncRouter();
 
+router.get("/purchaseGroupRequests", getPurchaseGroupRequests);
+router.post("/purchaseGroupRequest", protect, createPurchaseGroupRequest);
+router.put("/purchaseGroupRequest/:id", protect, updatePurchaseGroupRequest);
+router.delete("/purchaseGroupRequest/:id", protect, deletePurchaseGroupRequest);
+
 router.get("/", getPurchaseGroups);
 router.get("/:id", getPurchaseGroupById);
 router.post("/", protect, createPurchaseGroup);
 router.put("/:id", protect, updatePurchaseGroup);
 router.delete("/:id", protect, deletePurchaseGroup);
-
-router.get("/purchaseGroupRequests", getPurchaseGroupRequests);
-router.post("/purchaseGroupRequest", protect, createPurchaseGroupRequest);
-router.put("/purchaseGroupRequest/:id", protect, updatePurchaseGroupRequest);
-router.delete("/purchaseGroupRequest/:id", protect, deletePurchaseGroupRequest);
 
 router.put("/changeRequestStatus/:id", protect, changeRequestStatus);
 
