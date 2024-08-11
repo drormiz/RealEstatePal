@@ -46,6 +46,7 @@ export const getPurchaseGroupById = async (req, res, next) => {
   try {
     const purchaseGroup = await findPurchaseGroupById(id);
 
+
     if (!purchaseGroup) {
       return res.status(404).json({ message: "Purchase group not found" });
     }
@@ -137,10 +138,6 @@ export const getPurchaseGroupRequests = async (req, res) => {
       .find(query)
       .populate('group') 
       .exec();
-
-    if (!requests.length) {
-      return res.status(404).json({ message: "No requests found" });
-    }
 
     res.status(200).json(requests);
   } catch (error) {

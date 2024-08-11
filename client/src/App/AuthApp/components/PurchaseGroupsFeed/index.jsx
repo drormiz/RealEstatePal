@@ -30,9 +30,6 @@ const PurchaseGroupsFeed = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentGroup, setCurrentGroup] = useState(null);
-  console.log("purchaseGroups", purchaseGroups);
-  console.log("currentGroup", currentGroup);
-  console.log("user", user);
 
   useEffect(() => {
     const fetchPurchaseGroups = async () => {
