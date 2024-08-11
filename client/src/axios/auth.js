@@ -6,7 +6,7 @@ export const loginUserFn = async user => await getUnauthenticatedClient().post(`
 
 export const logoutUserFn = async () => await getUnauthenticatedClient().get(`auth/logout`, {
     headers: {
-        Authorization: `bearer ${getRefreshToken()}`
+        Authorization: `Bearer ${getRefreshToken()}`
     }
 });
 

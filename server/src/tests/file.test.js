@@ -36,7 +36,7 @@ afterAll(async () => {
 describe("File Tests", () => {
     test("upload file", async () => {
             const response = await request(app)
-            .post('/api/file').set("Authorization", "bearer " + accessToken)
+            .post('/api/file').set("Authorization", "Bearer " + accessToken)
             .attach('image', Buffer.from(''), {
               filename: 'test-image.jpg',
               contentType: 'image/jpeg',

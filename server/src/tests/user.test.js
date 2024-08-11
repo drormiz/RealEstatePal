@@ -46,24 +46,24 @@ beforeAll(async () => {
 describe("User tests", () => {
   const updateUser = async () => {
     const response = await request(app).put(`/api/users/${userId}`)
-      .set("Authorization", "bearer " + accessToken)
+      .set("Authorization", "Bearer " + accessToken)
       .send(updatedUser);
 
     expect(response.statusCode).toBe(200);
   };
   test("Test Get All users", async () => {
-    const response = await request(app).get("/api/users").set("Authorization", "bearer " + accessToken);
+    const response = await request(app).get("/api/users").set("Authorization", "Bearer " + accessToken);
     expect(response.statusCode).toBe(200);
   });
 
   test("Test update user", async () => {
-    const response = await request(app).get("/api/users").set("Authorization", "bearer " + accessToken);
+    const response = await request(app).get("/api/users").set("Authorization", "Bearer " + accessToken);
     userId = response.body[0]._id;
     updateUser();
   });
 
   test("Test Get All users with one user in DB", async () => {
-    const response = await request(app).get("/api/users").set("Authorization", "bearer " + accessToken);
+    const response = await request(app).get("/api/users").set("Authorization", "Bearer " + accessToken);
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
     const userFetched = response.body[0];
@@ -72,7 +72,7 @@ describe("User tests", () => {
 
   test("Test DELETE /user/:id", async () => {
     const response = await request(app).delete(`/api/users/${userId}`)
-    .set("Authorization", "bearer " + accessToken);;
+    .set("Authorization", "Bearer " + accessToken);;
     expect(response.statusCode).toBe(200);
   });
 });
