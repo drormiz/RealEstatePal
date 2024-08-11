@@ -1,56 +1,58 @@
-import { UserModel } from '../../models/user.model.js';
+import { UserModel } from "../../models/user.model.js";
 
 export const getUsers = async (req, res, next) => {
-    try {
-        const users = await UserModel.find({});
+  try {
+    const users = await UserModel.find({});
 
-        return res.json(users);
-    } catch (error) {
-        next(error)
-    }
+    return res.json(users);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const deleteUser = async (req, res) => {
   const userId = req.params.id;
 
   try {
-    const deletedUser = await UserModel.findByIdAndDelete(
-      userId,
-      req.body,
-      { new: true }
-    );
+    const deletedUser = await UserModel.findByIdAndDelete(userId, req.body, {
+      new: true,
+    });
 
     if (!deletedUser) {
-      return res.status(404).json({ error: 'user not found' });
+      return res.status(404).json({ error: "user not found" });
     }
 
     res.status(200).json(deletedUser);
   } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-
-
-
 export const updateUser = async (req, res) => {
-    const userId = req.params.id;
-    
-    try {
-      const updatedProfile = await UserModel.findByIdAndUpdate(
-        userId,
-        req.body, 
-        { new: true }
-      )
-  
-      if (!updatedProfile) {
-        return res.status(404).json({ error: 'profile not found' });
+  const userId = req.params.id;
+  const { username } = req.body;
+
+  try {
+    if (username) {
+      const existingUser = await UserModel.findOne({ username });
+
+      if (existingUser && existingUser.image === req.body.image) {
+        return res.status(400).json({ error: "Username is already taken" });
       }
-  
-      res.status(200).json(updatedProfile);
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
     }
-  };
+
+    const updatedProfile = await UserModel.findByIdAndUpdate(userId, req.body, {
+      new: true,
+    });
+
+    if (!updatedProfile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    res.status(200).json(updatedProfile);
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
