@@ -31,20 +31,20 @@ export const deleteUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const userId = req.params.id;
-  const { username } = req.body;
-
   try {
-    if (username) {
-      const existingUser = await UserModel.findOne({ username });
+    const existingUser = await UserModel.findOne({username: req.body.username});
 
-      if (existingUser && existingUser.image === req.body.image) {
-        return res.status(400).json({ error: "Username is already taken" });
-      }
+    if ( existingUser && existingUser._id !== userId) {
+      return res.status(400).json({ error: "Username is already taken" });
     }
 
-    const updatedProfile = await UserModel.findByIdAndUpdate(userId, req.body, {
-      new: true,
-    });
+    const updatedProfile = await UserModel.findByIdAndUpdate(
+      userId,
+      req.body,
+      {
+        new: true,
+      }
+    );
 
     if (!updatedProfile) {
       return res.status(404).json({ error: "Profile not found" });

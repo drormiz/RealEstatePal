@@ -92,20 +92,16 @@ const Profile = () => {
       const localUser = JSON.parse(localStorage.getItem("user"));
       const updatedUser = {
         ...localUser,
-        name: formState.name, 
-        username: formState.username 
+        name: formState.name,
+        username: formState.username,
       };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      await getClient().put(`api/users/${user._id}`,updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
-      await getClient().put(`api/users/${user._id}`, updatedUser);
-      
       toast.success("Profile updated successfully!");
     } catch (error) {
-      if (error.response.status === 400 || error.response.status === 404) {
-        console.error(
-          "Error updating user profile:",
-          error.response.data.error
-        );
+      if ( error.response && (error.response.status === 400 || error.response.status === 404)) {
+        console.error("Error updating user profile:",error.response.data.error);
         toast.error(error.response.data.error);
       }
     }
