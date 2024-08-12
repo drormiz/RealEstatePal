@@ -34,7 +34,7 @@ export const updateUser = async (req, res) => {
   try {
     const existingUser = await UserModel.findOne({username: req.body.username});
 
-    if ( existingUser && existingUser._id !== userId) {
+    if ( existingUser && existingUser._id.toString() !== userId) {
       return res.status(400).json({ error: "Username is already taken" });
     }
 
