@@ -17,6 +17,15 @@ const PurchaseGroupSchema = new Schema(
       default: [],
       ref: "User",
     },
+    maxMembersCount: {
+      type: String
+    },
+    participationPrice: {
+      type: String
+    },
+    profitPercentage: {
+      type: String
+    },
     purchaseGroupRequests: {
       type: [mongoose.Schema.Types.ObjectId],
       default: [],

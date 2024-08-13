@@ -32,6 +32,9 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
       name: "",
       description: "",
       property: "",
+      maxMembersCount: "",
+      participationPrice: "",
+      profitPercentage: "",
     },
   });
 
@@ -44,6 +47,9 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
       setValue("name", "");
       setValue("description", "");
       setValue("property", "");
+      setValue("maxMembersCount", "");
+      setValue("participationPrice", "");
+      setValue("profitPercentage", "");
     }
   }, [state, setValue]);
 
@@ -97,6 +103,36 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                 placeholder="Description *"
                 required
               />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                  {...register("maxMembersCount")}
+                  label="Max Members Count"
+                  
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                  fullWidth
+                />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                  {...register("participationPrice")}
+                  label="Participation Price"
+                  
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                  fullWidth
+                />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                  {...register("profitPercentage")}
+                  label="Profit Percentage"
+                  
+                  InputLabelProps={{ shrink: true }}
+                  variant="outlined"
+                  fullWidth
+                />
             </Grid>
             <Grid item xs={12}>
               {isUpdateMode ? (
