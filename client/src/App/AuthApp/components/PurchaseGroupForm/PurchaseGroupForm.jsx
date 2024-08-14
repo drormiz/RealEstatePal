@@ -8,10 +8,8 @@ import {
   Button,
   Grid,
   Typography,
-  MenuItem,
-  Select,
-  InputLabel,
   FormControl,
+  Autocomplete
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
@@ -108,7 +106,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
               <TextField
                   {...register("maxMembersCount")}
                   label="Max Members Count"
-                  
+                  type="number"
                   InputLabelProps={{ shrink: true }}
                   variant="outlined"
                   fullWidth
@@ -118,7 +116,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
               <TextField
                   {...register("participationPrice")}
                   label="Participation Price"
-                  
+                  type="number"
                   InputLabelProps={{ shrink: true }}
                   variant="outlined"
                   fullWidth
@@ -128,7 +126,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
               <TextField
                   {...register("profitPercentage")}
                   label="Profit Percentage"
-                  
+                  type="number"
                   InputLabelProps={{ shrink: true }}
                   variant="outlined"
                   fullWidth
@@ -157,34 +155,35 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                     backgroundColor: isUpdateMode ? "#dddddd" : "inherit",
                   }}
                 />
-              ) : (
-                <FormControl fullWidth>
-                  <InputLabel id="property-label">Property</InputLabel>
-                  <Controller
-                    name="property"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        labelId="property-label"
-                        {...field}
-                        label="Property"
-                      >
-                        {properties
-                          .filter(
-                            (property) =>
-                              property.purchaseGroup === undefined ||
-                              property._id === state?.group?.property
-                          )
-                          .map((property) => (
-                            <MenuItem key={property._id} value={property._id}>
-                              {property.name} | {property.description}
-                            </MenuItem>
-                          ))}
-                      </Select>
+              ) : 
+                (
+                  <FormControl fullWidth>
+                    <Controller
+                      name="property"
+                      control={control}
+                      render={({ field: { onChange, value, ref } }) => (
+                        <Autocomplete
+                          options={properties}
+                          getOptionLabel={(option) =>
+                            option ? option.name : ''
+                          }
+                          isOptionEqualToValue={(option, value) => option._id === value}
+                          onChange={(_, data) => onChange(data ? data._id : '')}
+                          value={properties.find((property) => property._id === value) || null}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Property"
+                              variant="outlined"
+                              inputRef={ref}
+                            />
+                          )}
+                        />
                     )}
                   />
                 </FormControl>
-              )}
+              )
+              }
             </Grid>
             <Grid item xs={12} sx={{ textAlign: "center" }}>
               <Button

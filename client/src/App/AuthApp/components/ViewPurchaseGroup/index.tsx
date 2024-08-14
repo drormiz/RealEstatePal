@@ -194,13 +194,13 @@ const ViewPurchaseGroup: React.FC = () => {
                 Description: {group.property.description}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Description: {group.property.maxMembersCount}
+                Max Members: {group.property.maxMembersCount}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Description: {group.property.participationPrice}
+                Participation Price: {group.property.participationPrice}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Description: {group.property.profitPercentage}
+                Profit %: {group.property.profitPercentage}
               </Typography>
               {group.property.image && (
                 <img

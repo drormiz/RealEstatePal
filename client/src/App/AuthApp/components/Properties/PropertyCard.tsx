@@ -1,18 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
-import { ArrowForward, Edit, ImageNotSupported } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { ArrowForward, Edit, GroupAdd, ImageNotSupported } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
 import Carousel from 'react-material-ui-carousel';
 import { useUser } from '../../contexts/UserContext';
 
 const PropertyCard = ({ property }) => {
   const { user } = useUser();
-
+  const navigate = useNavigate();
+  
+  const createPurchaseGroupFromProperty = () => {
+    navigate("/add-purchase-group", { state: { group: { property: property._id } } });
+  }
   const isUserOwner = user._id === property.owner;
 
   return (
@@ -75,7 +79,17 @@ const PropertyCard = ({ property }) => {
         </Typography>
       </CardContent>
 
-      <CardActions sx={{ justifyContent: 'flex-end' }}>
+      <CardActions sx={{ justifyContent: 'space-between' }}>
+      <Tooltip title='create purchase group'>
+
+      
+      <IconButton
+          onClick={createPurchaseGroupFromProperty}
+          size='small'
+          color='primary'>
+          <GroupAdd />
+        </IconButton>
+        </Tooltip>
         <IconButton
           component={Link}
           to={`/properties/${property._id}`}
