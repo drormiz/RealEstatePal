@@ -14,14 +14,13 @@ import { propertyType } from "../../consts/property-type.const";
 import { fontSize } from "@mui/system";
 
 const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
-  const { state } = useLocation();
   const navigate = useNavigate();
-  const { id } = useParams();
   const { user } = useUser();
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: zodResolver(addEditPropertyFormSchema)});
   const [selectedImages, setSelectedImages] = useState([]);
   const [propertyImages, setPropertyImages] = useState([]);
+  const isPropertyOwnedUser = property?.owner === user._id;
 
   useEffect(() => {
     if (property) {
@@ -91,6 +90,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
           <Grid item xs={12} md={6}>
             <Stack spacing={3}>
               <TextField
+                disabled={(property && !isPropertyOwnedUser)}
                 {...register("name")}
                 label="Property Name"
                 variant="outlined"
@@ -99,6 +99,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 helperText={errors.name ? 'Name is required' : ''}
               />
               <TextField
+                disabled={(property && !isPropertyOwnedUser)}
                 {...register("price")}
                 label="Price ($)"
                 type="number"
@@ -109,6 +110,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 helperText={errors.price ? 'Price is required' : ''}
               />
               <TextField
+                disabled={(property && !isPropertyOwnedUser)}
                 {...register("meters")}
                 label="Size (sq. meters)"
                 type="number"
@@ -119,6 +121,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 helperText={errors.meters ? 'Size is required' : ''}
               />
               <TextField
+                disabled={(property && !isPropertyOwnedUser)}
                 {...register("numberOfRooms")}
                 label="Number of Rooms"
                 type="number"
@@ -129,6 +132,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 helperText={errors.numberOfRooms ? 'Number of rooms is required' : ''}
               />
               <TextField
+                disabled={(property && !isPropertyOwnedUser)}
                 {...register("floor")}
                 label="Floor"
                 type="number"
@@ -141,6 +145,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
               <FormControl fullWidth>
                 <InputLabel id="property-type-label">Property Type</InputLabel>
                 <Select
+                  disabled={(property && !isPropertyOwnedUser)}
                   {...register("propertyType")}
                   labelId="property-type-label"
                   label="Property Type"
@@ -154,6 +159,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 </Select>
               </FormControl>
               <TextField
+                disabled={(property && !isPropertyOwnedUser)}
                 {...register("description")}
                 label="Description"
                 multiline
@@ -166,7 +172,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
 
               <label style={{fontSize: "large"}}>
                <input style={{ width: '20px', height: '20px' }}
-                   type="checkbox" {...register('hasElevator')} />
+                   type="checkbox" {...register('hasElevator')} disabled={(property && !isPropertyOwnedUser)} />
                    Is there an elevator?
               </label>
             </Stack>
@@ -174,7 +180,11 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
           <Grid item xs={12} md={6}>
             <Stack spacing={3}>
               <Typography sx={{textDecoration: 'underline'}} variant="h4"  gutterBottom>Property Images</Typography>
-              <input
+              {
+                !(property && !isPropertyOwnedUser) &&
+                <>
+                <input
+                disabled={(property && !isPropertyOwnedUser)}
                 {...register("images")}
                 accept="image/*"
                 id="upload-images"
@@ -193,6 +203,10 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                   Upload Images
                 </Button>
               </label>
+                </>
+                  
+              }
+              
               <Grid sx={{height:'400px', overflow:"auto"}} container spacing={2}>
                 {selectedImages.map((image, index) => (
                   <Grid item key={index} xs={4}>
@@ -208,7 +222,9 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                         overflow: 'hidden',
                       }}
                     >
-                      <IconButton
+                      {
+                        !(property && !isPropertyOwnedUser) &&
+                        <IconButton
                         size="small"
                         sx={{
                           position: 'absolute',
@@ -218,9 +234,11 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                           color: 'white',
                         }}
                         onClick={() => handleRemoveImage(image.url)}
-                      >
-                        <CloseIcon fontSize="small" />
-                      </IconButton>
+                        >
+                          <CloseIcon fontSize="small" />
+                         </IconButton>
+                      }
+                      
                     </Box>
                   </Grid>
                 ))}
@@ -238,19 +256,23 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                         overflow: 'hidden',
                       }}
                     >
-                      <IconButton
-                        size="small"
-                        sx={{
-                          position: 'absolute',
-                          top: '8px',
-                          right: '8px',
-                          backgroundColor: 'rgba(255, 0, 0, 0.7)',
-                          color: 'white',
-                        }}
-                        onClick={() => handleRemovePropertyImage(image)}
-                      >
-                        <CloseIcon fontSize="small" />
-                      </IconButton>
+                      {
+                        !(property && !isPropertyOwnedUser) &&
+                         <IconButton
+                         size="small"
+                         sx={{
+                           position: 'absolute',
+                           top: '8px',
+                           right: '8px',
+                           backgroundColor: 'rgba(255, 0, 0, 0.7)',
+                           color: 'white',
+                         }}
+                         onClick={() => handleRemovePropertyImage(image)}
+                       >
+                         <CloseIcon fontSize="small" />
+                       </IconButton>
+                      }
+                      
                     </Box>
                   </Grid>
                 ))}
@@ -258,7 +280,9 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
             </Stack>
           </Grid>
         </Grid>
-        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
+        {
+          !(property && !isPropertyOwnedUser) &&
+          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
           <Button
             type="submit"
             variant="contained"
@@ -268,6 +292,8 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
             {property? 'Update property' : 'Add property'}
           </Button>
         </Box>
+        }
+        
       </Paper>
     </form>
   );

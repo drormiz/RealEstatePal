@@ -1,105 +1,65 @@
+import React, { useState } from 'react';
 import {
   AppBar as MuiAppBar,
   Typography,
-  Button,
   Toolbar,
-  Box
+  Box,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { useUser } from '../../../../Providers/UserProvider';
 import UserMenu from './UserMenu';
+import { TabContext, TabList, TabPanel } from '@mui/lab'; // Import TabContext, TabList, and TabPanel
+import Tab from '@mui/material/Tab';
 
 const AppBar = () => {
-  const { user } = useUser();
+  const [value, setValue] = useState('1');
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   return (
-    <MuiAppBar
-      position='static'
-      elevation={0}
-      sx={{
-        zIndex: theme => theme.zIndex.drawer + 1,
-        backgroundColor: 'white',
-        borderBottom: '1px solid #e0e0e0',
-        padding: '0 24px'
-      }}>
-      <Toolbar sx={{ justifyContent: 'space-between', width: '100%' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Button
-            component={Link}
-            to='/'
-            sx={{
-              textTransform: 'none',
-              fontWeight: 'bold',
-              fontSize: '1.25rem',
-              color: 'primary.main',
-              marginRight: 4,
-              '&:hover': {
-                backgroundColor: 'transparent'
-              }
-            }}>
-            RealEstatePal
-          </Button>
+    <>
+      <MuiAppBar
+        position="static"
+        elevation={0}
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: 'white',
+          borderBottom: '1px solid #e0e0e0',
+          padding: '0 24px',
+        }}
+      >
+        <Toolbar sx={{ justifyContent: 'space-between', width: '100%' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography
+              component={Link}
+              to="/"
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+                fontSize: '1.25rem',
+                color: 'primary.main',
+                marginRight: 4,
+                textDecoration: 'none',
+              }}
+            >
+              RealEstatePal
+            </Typography>
 
-          <Button
-            component={Link}
-            to='/properties'
-            sx={{
-              textTransform: 'none',
-              fontWeight: 'bold',
-              color: 'primary.main',
-              position: 'relative',
-              marginRight: 2,
-              '&:hover::after': {
-                transform: 'scaleX(1)',
-                transformOrigin: 'bottom left'
-              },
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                left: 0,
-                bottom: -2,
-                width: '100%',
-                height: '2px',
-                backgroundColor: 'primary.main',
-                transform: 'scaleX(0)',
-                transformOrigin: 'bottom right',
-                transition: 'transform 0.3s ease-out'
-              }
-            }}>
-            Properties
-          </Button>
-
-          <Button
-            component={Link}
-            to='/purchase-groups-feed'
-            sx={{
-              textTransform: 'none',
-              fontWeight: 'bold',
-              color: 'primary.main',
-              position: 'relative',
-              '&:hover::after': {
-                transform: 'scaleX(1)',
-                transformOrigin: 'bottom left'
-              },
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                left: 0,
-                bottom: -2,
-                width: '100%',
-                height: '2px',
-                backgroundColor: 'primary.main',
-                transform: 'scaleX(0)',
-                transformOrigin: 'bottom right',
-                transition: 'transform 0.3s ease-out'
-              }
-            }}>
-            Groups
-          </Button>
-        </Box>
-        <UserMenu />
-      </Toolbar>
-    </MuiAppBar>
+            <TabContext value={value}>
+              <Box sx={{ marginLeft: 2 }}>
+                <TabList onChange={handleChange} aria-label="AppBar tabs">
+                  <Tab label="Properties" value="1" component={Link} to='/properties'  />
+                  <Tab label="Groups" value="2" component={Link} to='/purchase-groups-feed' />
+                  <Tab label="My Pal" value="3" component={Link} to='/info' />
+                </TabList>
+              </Box>
+            </TabContext>
+          </Box>
+          <UserMenu />
+        </Toolbar>
+      </MuiAppBar>
+    </>
   );
 };
 
