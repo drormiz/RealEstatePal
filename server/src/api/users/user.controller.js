@@ -1,4 +1,5 @@
 import { UserModel } from "../../models/user.model.js";
+import { hashPassword, comparePaswords } from "../../services/hashPassword.js";
 
 export const getUsers = async (req, res, next) => {
   try {
@@ -29,22 +30,44 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+
 export const updateUser = async (req, res) => {
   const userId = req.params.id;
-  try {
-    const existingUser = await UserModel.findOne({username: req.body.username});
+  const { image, name, username, currentPassword, newPassword } = req.body;
 
-    if ( existingUser && existingUser._id.toString() !== userId) {
-      return res.status(400).json({ error: "Username is already taken" });
+  try {
+    if ( (image && (name || username || currentPassword || newPassword)) ||
+         ((name || username) && (image || currentPassword || newPassword)) ||
+         ((currentPassword && newPassword) && (image || name || username)) ) {
+      return res.status(400).json({ error: "You can only update the image, username/name, or password at a time." });
     }
 
-    const updatedProfile = await UserModel.findByIdAndUpdate(
-      userId,
-      req.body,
-      {
-        new: true,
+    let updatedProfile;
+
+    if (image) {
+      updatedProfile = await UserModel.findByIdAndUpdate(userId, { image }, { new: true });
+    } 
+    
+    else if (name || username) {
+      const existingUser = await UserModel.findOne({ username });
+      if (existingUser && existingUser._id.toString() !== userId) {
+        return res.status(400).json({ error: "Username is already taken" });
       }
-    );
+      updatedProfile = await UserModel.findByIdAndUpdate(userId, { name, username }, { new: true });
+    } 
+    
+    else if (currentPassword && newPassword) {
+      const user = await UserModel.findById(userId);
+      const match = await comparePaswords(currentPassword, user.password);
+      if (!match) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+      }
+      else{
+        user.password = newPassword
+        await user.save();
+        updatedProfile = user;
+      }      
+    }
 
     if (!updatedProfile) {
       return res.status(404).json({ error: "Profile not found" });
