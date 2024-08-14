@@ -22,6 +22,9 @@ interface PurchaseGroup {
   name: string;
   description: string;
   members: { _id: string; name: string; username: string; email: string }[];
+  maxMembersCount: Number;
+  participationPrice: Number;
+  profitPercentage: Number;
   purchaseGroupRequests: {
     _id: string;
     priceToInvest: number;
@@ -189,6 +192,15 @@ const ViewPurchaseGroup: React.FC = () => {
               </Typography>
               <Typography variant="body1" gutterBottom>
                 Description: {group.property.description}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Max Members: {group.property.maxMembersCount}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Participation Price: {group.property.participationPrice}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Profit %: {group.property.profitPercentage}
               </Typography>
               {group.property.image && (
                 <img
