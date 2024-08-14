@@ -5,9 +5,10 @@ import PurchaseGroupsFeed from '../PurchaseGroupsFeed/index';
 import AddProperty from '../PropertyForm/AddProperty';
 import EditProperty from '../PropertyForm/EditProperty';
 import ViewPurchaseGroup from '../ViewPurchaseGroup/index';
-import Info from "../Info/index";
+import Info from '../Info/index';
 import Properties from '../Properties';
 import HomePage from '../HomePage/index';
+import UserRequests from '../UserRequests';
 import Statistics from '../Statistics';
 
 const AuthenticatedRoutes = () => (
@@ -33,13 +34,16 @@ const AuthenticatedRoutes = () => (
     <Route path='/properties/:id'>
       <Route index element={<EditProperty />} />
     </Route>
+    <Route path='/requests'>
+      <Route index element={<UserRequests />} />
+    </Route>
     <Route path='/purchasing-groups'>
       <Route index element={<PurchaseGroupsFeed />} />
     </Route>
     <Route path='/view-purchase-group'>
       <Route index element={<ViewPurchaseGroup />} />
     </Route>
-    <Route path="/info">
+    <Route path='/info'>
       <Route index element={<Info />} />
     </Route>
     <Route path="/statistics">

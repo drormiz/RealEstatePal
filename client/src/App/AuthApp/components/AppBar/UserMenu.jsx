@@ -1,12 +1,4 @@
-import {
-  LightMode,
-  Logout,
-  ModeNight,
-  PlusOne,
-  Info,
-  AccountCircle
-} from '@mui/icons-material';
-import GroupsIcon from '@mui/icons-material/Groups';
+import { Logout, AccountCircle, List } from '@mui/icons-material';
 import {
   Avatar,
   IconButton,
@@ -21,7 +13,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import stringToColor from 'string-to-color';
-import { useColorMode } from '../../../../Providers/ThemeProvider';
 import { useUser } from '../../../../Providers/UserProvider';
 import { logoutUserFn } from '../../../../axios/auth';
 
@@ -38,7 +29,6 @@ const getInitials = fullName =>
 const UserMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
-  const { toggleColorMode } = useColorMode();
   const {
     palette: { mode, primary }
   } = useTheme();
@@ -75,23 +65,8 @@ const UserMenu = () => {
     closeMenu();
   };
 
-  const navigateToAddPurchaseGroupPage = () => {
-    navigate('/add-purchase-group');
-    closeMenu();
-  };
-
-  const navigateToAddProperty = () => {
-    navigate('/add-property');
-    closeMenu();
-  };
-
-  const navigateToPurchaseGroupFeed = () => {
-    navigate('/purchasing-groups');
-    closeMenu();
-  };
-
-  const navigateToInfo = () => {
-    navigate('/info');
+  const navigateToGroupRequests = () => {
+    navigate(`/requests`);
     closeMenu();
   };
 
@@ -122,47 +97,13 @@ const UserMenu = () => {
           </Typography>
         </MenuItem>
         <MenuItem
-          onClick={navigateToAddPurchaseGroupPage}
+          onClick={navigateToGroupRequests}
           sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
           <ListItemIcon>
-            <PlusOne color='primary' />
+            <List color='primary' />
           </ListItemIcon>
           <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-            Add Purchase Group
-          </Typography>
-        </MenuItem>
-        <MenuItem
-          onClick={navigateToPurchaseGroupFeed}
-          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
-          <ListItemIcon>
-            <GroupsIcon color='primary' />
-          </ListItemIcon>
-          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-            Purchase Groups
-          </Typography>
-        </MenuItem>
-        <MenuItem
-          onClick={navigateToInfo}
-          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
-          <ListItemIcon>
-            <Info color='primary' />
-          </ListItemIcon>
-          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-            Info
-          </Typography>
-        </MenuItem>
-        <MenuItem
-          onClick={toggleColorMode}
-          sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' } }}>
-          <ListItemIcon>
-            {mode === 'light' ? (
-              <LightMode color='primary' />
-            ) : (
-              <ModeNight color='primary' />
-            )}
-          </ListItemIcon>
-          <Typography sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-            Change Color Mode
+            My Requests
           </Typography>
         </MenuItem>
         <MenuItem
