@@ -179,7 +179,6 @@ const HomePage = () => {
           imageUrl={"/assets/profit.jpg"}
         />
       </Container>
-      <Footer />
     </>
   );
 };

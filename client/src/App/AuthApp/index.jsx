@@ -1,5 +1,6 @@
 import { Column, Row } from "../../Layout";
 import AppBar from "./components/AppBar";
+import Footer from "./components/HomePage/footer";
 import AuthenticatedRoutes from "./components/Routes";
 import { UserProvider } from "./contexts/UserContext";
 
@@ -12,6 +13,7 @@ const AuthenticatedApp = ({ user }) => (
           <AuthenticatedRoutes />
         </Column>
       </Row>
+      <Footer />
     </Column>
   </UserProvider>
 );
