@@ -1,12 +1,19 @@
-body {
-  height: 100vh;
-  width: 100vw;
+body,
+#root {
   margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 #root {
-  height: 100%;
-  width: 100%;
+  flex: 1;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 /* width */

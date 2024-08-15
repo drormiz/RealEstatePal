@@ -357,6 +357,18 @@ const ViewPurchaseGroup: React.FC = () => {
               </Grid>
             </>
           )}
+
+          <Grid container spacing={2} style={{ marginTop: "20px" }}>
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => navigate("/purchasing-groups")}
+              >
+                Back to Purchase Groups
+              </Button>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
     </Container>

@@ -86,7 +86,7 @@ const UserMenu = () => {
   };
 
   const navigateToPurchaseGroupFeed = () => {
-    navigate('/purchase-groups-feed');
+    navigate('/purchasing-groups');
     closeMenu();
   };
 

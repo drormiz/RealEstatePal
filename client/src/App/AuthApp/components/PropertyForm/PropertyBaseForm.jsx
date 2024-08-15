@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Paper, Grid, Stack, TextField, FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, Button, Typography, Box, IconButton } from "@mui/material";
+import { Paper, Grid, Stack, TextField, FormControl, InputLabel, Select, MenuItem, Button, Typography, Box, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import AddIcon from "@mui/icons-material/Add";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "../../../../Providers/UserProvider";
 import { addEditPropertyFormSchema } from "./validationSchema";
 import { uploadRequest } from "../../../../axios";
 import { propertyType } from "../../consts/property-type.const";
-import { fontSize } from "@mui/system";
 
 const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
   const navigate = useNavigate();
@@ -85,7 +82,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-      <Paper sx={{ padding: '20px', margin: '50px', borderRadius: '12px', backgroundColor: '#f9f9f9' }}>
+      <Paper sx={{ padding: '20px', margin: '50px', borderRadius: '12px', backgroundColor: '#f9f9f9', maxHeight: '80vh', overflow: 'auto' }}>
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <Stack spacing={3}>
@@ -170,44 +167,41 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 helperText={errors.description ? 'Description is required' : ''}
               />
 
-              <label style={{fontSize: "large"}}>
-               <input style={{ width: '20px', height: '20px' }}
-                   type="checkbox" {...register('hasElevator')} disabled={(property && !isPropertyOwnedUser)} />
-                   Is there an elevator?
+              <label style={{ fontSize: "large" }}>
+                <input style={{ width: '20px', height: '20px' }} type="checkbox" {...register('hasElevator')} disabled={(property && !isPropertyOwnedUser)} />
+                Is there an elevator?
               </label>
             </Stack>
           </Grid>
           <Grid item xs={12} md={6}>
             <Stack spacing={3}>
-              <Typography sx={{textDecoration: 'underline'}} variant="h4"  gutterBottom>Property Images</Typography>
+              <Typography sx={{ textDecoration: 'underline' }} variant="h4" gutterBottom>Property Images</Typography>
               {
                 !(property && !isPropertyOwnedUser) &&
                 <>
-                <input
-                disabled={(property && !isPropertyOwnedUser)}
-                {...register("images")}
-                accept="image/*"
-                id="upload-images"
-                multiple
-                type="file"
-                style={{ display: 'none' }}
-                onChange={handleImageChange}
-              />
-              <label htmlFor="upload-images">
-                <Button
-                  variant="outlined"
-                  component="span"
-                  fullWidth
-                  startIcon={<PhotoCamera />}
-                >
-                  Upload Images
-                </Button>
-              </label>
+                  <input
+                    disabled={(property && !isPropertyOwnedUser)}
+                    {...register("images")}
+                    accept="image/*"
+                    id="upload-images"
+                    multiple
+                    type="file"
+                    style={{ display: 'none' }}
+                    onChange={handleImageChange}
+                  />
+                  <label htmlFor="upload-images">
+                    <Button
+                      variant="outlined"
+                      component="span"
+                      fullWidth
+                      startIcon={<PhotoCamera />}
+                    >
+                      Upload Images
+                    </Button>
+                  </label>
                 </>
-                  
               }
-              
-              <Grid sx={{height:'400px', overflow:"auto"}} container spacing={2}>
+              <Grid sx={{ height: '400px', overflow: "auto" }} container spacing={2}>
                 {selectedImages.map((image, index) => (
                   <Grid item key={index} xs={4}>
                     <Box
@@ -225,20 +219,19 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                       {
                         !(property && !isPropertyOwnedUser) &&
                         <IconButton
-                        size="small"
-                        sx={{
-                          position: 'absolute',
-                          top: '8px',
-                          right: '8px',
-                          backgroundColor: 'rgba(255, 0, 0, 0.7)',
-                          color: 'white',
-                        }}
-                        onClick={() => handleRemoveImage(image.url)}
+                          size="small"
+                          sx={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            backgroundColor: 'rgba(255, 0, 0, 0.7)',
+                            color: 'white',
+                          }}
+                          onClick={() => handleRemoveImage(image.url)}
                         >
                           <CloseIcon fontSize="small" />
-                         </IconButton>
+                        </IconButton>
                       }
-                      
                     </Box>
                   </Grid>
                 ))}
@@ -258,21 +251,20 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                     >
                       {
                         !(property && !isPropertyOwnedUser) &&
-                         <IconButton
-                         size="small"
-                         sx={{
-                           position: 'absolute',
-                           top: '8px',
-                           right: '8px',
-                           backgroundColor: 'rgba(255, 0, 0, 0.7)',
-                           color: 'white',
-                         }}
-                         onClick={() => handleRemovePropertyImage(image)}
-                       >
-                         <CloseIcon fontSize="small" />
-                       </IconButton>
+                        <IconButton
+                          size="small"
+                          sx={{
+                            position: 'absolute',
+                            top: '8px',
+                            right: '8px',
+                            backgroundColor: 'rgba(255, 0, 0, 0.7)',
+                            color: 'white',
+                          }}
+                          onClick={() => handleRemovePropertyImage(image)}
+                        >
+                          <CloseIcon fontSize="small" />
+                        </IconButton>
                       }
-                      
                     </Box>
                   </Grid>
                 ))}
@@ -283,17 +275,16 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
         {
           !(property && !isPropertyOwnedUser) &&
           <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            sx={{ padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold' }}
-          >
-            {property? 'Update property' : 'Add property'}
-          </Button>
-        </Box>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{ padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold' }}
+            >
+              {property ? 'Update property' : 'Add property'}
+            </Button>
+          </Box>
         }
-        
       </Paper>
     </form>
   );
