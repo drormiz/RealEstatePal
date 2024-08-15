@@ -31,6 +31,7 @@
     "react-hook-form": "^7.50.1",
     "react-image-crop": "^11.0.6",
     "react-material-ui-carousel": "^3.4.2",
+    "react-phone-input-2": "^2.15.1",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.21.2",
     "react-slick": "^0.30.2",

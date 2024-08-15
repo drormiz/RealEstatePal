@@ -19,6 +19,7 @@ const UserSchema = new Schema(
     },
     email: { type: String },
     image: { type: String },
+    phoneNumber: { type: String},
     refreshTokens: {
       type: [String],
       default: [],
