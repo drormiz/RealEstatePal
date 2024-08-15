@@ -128,7 +128,7 @@ const HomePage = () => {
             backgroundColor: "#E5E4E2",
           }}
         >
-          <HorizontalPanel>
+          <HorizontalPanel properties={properties}>
             {!loading
               ? properties.map((property) => (
                   <Box
