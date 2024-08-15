@@ -1,6 +1,40 @@
-import { Container, Typography, Box } from "@mui/material";
-
+import React from "react";
+import { useState, useEffect } from "react";
+import {
+  Typography,
+  Box,
+  Skeleton,
+  Container,
+  Card,
+  Grid,
+  CardMedia,
+  CardContent,
+} from "@mui/material";
+import PropertyCard from "../Properties/PropertyCard";
+import { getClient } from "../../../../axios";
+import Footer from "./footer";
+import HorizontalPanel from "./horizontal-panel";
+import Banner from "./banner";
 const HomePage = () => {
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      setLoading(true);
+      try {
+        const properties = await getClient().get(`api/properties`);
+        setProperties(properties.data);
+      } catch (error) {
+        console.error("Error fetching properties and groups:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
   return (
     <>
       <Box
@@ -71,6 +105,81 @@ const HomePage = () => {
           </Typography>
         </Box>
       </Box>
+      <Container
+        maxWidth="lg"
+        sx={{
+          paddingInline: "50px",
+          position: "relative",
+          overflowX: "hidden",
+          boxShadow: "none",
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{ textAlign: "start", fontWeight: "bold", mt: 4 }}
+        >
+          Find Out Our Properties
+        </Typography>
+        <Box
+          sx={{
+            mt: 1,
+            borderRadius: "8px",
+            position: "relative",
+            backgroundColor: "#E5E4E2",
+          }}
+        >
+          <HorizontalPanel properties={properties}>
+            {!loading
+              ? properties.map((property) => (
+                  <Box
+                    key={property._id}
+                    sx={{ minWidth: 300, marginRight: 2 }}
+                  >
+                    <PropertyCard property={property} />
+                  </Box>
+                ))
+              : Array.from(new Array(3)).map((_, index) => (
+                  <Skeleton
+                    key={index}
+                    variant="rectangular"
+                    width={300}
+                    height={400}
+                    sx={{ margin: "0 20px" }}
+                  />
+                ))}
+          </HorizontalPanel>
+        </Box>
+      </Container>
+      <Container
+        maxWidth="xl"
+        sx={{
+          padding: 4,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 10,
+          position: "relative",
+          overflowX: "hidden",
+        }}
+      >
+        <Banner
+          title={"1"}
+          subtitle={"Meet Your Purchasing Group"}
+          imageUrl={"/assets/group.jpg"}
+        />
+        <Banner
+          title={"2"}
+          subtitle={"Pick Property To Invest"}
+          imageUrl={"/assets/realestate.jpg"}
+        />
+        <Banner
+          title={"3"}
+          subtitle={"Make Your Profit"}
+          imageUrl={"/assets/profit.jpg"}
+        />
+      </Container>
+      <Footer />
     </>
   );
 };
