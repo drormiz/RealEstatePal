@@ -1,17 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar as MuiAppBar,
   Typography,
   Toolbar,
   Box,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import UserMenu from './UserMenu';
-import { TabContext, TabList, TabPanel } from '@mui/lab'; // Import TabContext, TabList, and TabPanel
+import { TabContext, TabList } from '@mui/lab'; // Import TabContext and TabList
 import Tab from '@mui/material/Tab';
 
 const AppBar = () => {
+  const location = useLocation();
   const [value, setValue] = useState('1');
+
+  useEffect(() => {
+    // Determine the tab value based on the current path
+    switch (location.pathname) {
+      case '/properties':
+        setValue('1');
+        break;
+      case '/purchase-groups-feed':
+        setValue('2');
+        break;
+      case '/info':
+        setValue('3');
+        break;
+      default:
+        setValue('1');
+    }
+  }, [location.pathname]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -49,7 +67,7 @@ const AppBar = () => {
             <TabContext value={value}>
               <Box sx={{ marginLeft: 2 }}>
                 <TabList onChange={handleChange} aria-label="AppBar tabs">
-                  <Tab label="Properties" value="1" component={Link} to='/properties'  />
+                  <Tab label="Properties" value="1" component={Link} to='/properties' />
                   <Tab label="Groups" value="2" component={Link} to='/purchase-groups-feed' />
                   <Tab label="My Pal" value="3" component={Link} to='/info' />
                 </TabList>
