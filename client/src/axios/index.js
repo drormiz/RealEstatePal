@@ -82,3 +82,6 @@ export const getUnauthenticatedClient = () => unauthenticatedClient;
 
 export const uploadRequest = async (data) =>
   await fileClient.post(`/api/file`, data);
+
+export const updateUser = async (userId, data) =>
+  await client.put(`/api/users/${userId}`, data);

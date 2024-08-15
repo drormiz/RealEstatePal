@@ -207,7 +207,6 @@ export const googleSignin = async (req, res) => {
       } else {
         user.refreshTokens.push(refreshToken);
       }
-      conas;
       await user.save();
 
       return res.json({

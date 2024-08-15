@@ -27,7 +27,7 @@ const AuthenticatedRoutes = () => (
     <Route path='/add-property'>
       <Route index element={<AddProperty />} />
     </Route>
-    <Route  path='/edit-property/:propertyId'>
+    <Route  path='/properties/:propertyId'>
       <Route index element={<EditProperty />} />
     </Route>
     <Route path='/properties/:id'>

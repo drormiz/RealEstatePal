@@ -21,7 +21,7 @@ import {
 import { useUser } from "../../contexts/UserContext";
 import { toast } from "react-toastify";
 import stringToColor from "string-to-color";
-import { getClient, uploadRequest } from "../../../../axios";
+import { getClient, uploadRequest, updateUser } from "../../../../axios";
 import UpgradeIcon from "@mui/icons-material/Upgrade";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
@@ -46,6 +46,12 @@ const Profile = () => {
   });
   const [open, setOpen] = useState(false);
   const [deleteRequestId, setDeleteRequestId] = useState(null);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
 
   useEffect(() => {
     setPreview(user.image || "");
@@ -73,14 +79,11 @@ const Profile = () => {
     try {
       const response = await uploadRequest(formData);
       const imageUrl = response.data.imageUrl;
-
-      const storedUser = JSON.parse(localStorage.getItem("user"));
-      const updatedUser = { ...storedUser, image: imageUrl };
-      await getClient().put(`api/users/${storedUser._id}`, updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
-      setPreview(imageUrl);
-      toast.success("Profile image updated successfully!");
+      const updatedUser = await updateUser(user._id, { image: imageUrl });
+      setUser(updatedUser.data);
+      setPreview(updatedUser.data.image);
+      localStorage.setItem("user", JSON.stringify(updatedUser.data));
+      window.location.reload();
     } catch (error) {
       console.error("Error uploading image:", error);
       toast.error("Failed to upload image.");
@@ -89,19 +92,16 @@ const Profile = () => {
 
   const handleUpdate = async () => {
     try {
-      const localUser = JSON.parse(localStorage.getItem("user"));
-      const updatedUser = {
-        ...localUser,
+      const updatedUser = await updateUser(user._id, {
         name: formState.name,
         username: formState.username,
-      };
-      await getClient().put(`api/users/${user._id}`,updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-      setUser(updatedUser);
+      });
+      setUser(updatedUser.data);
+      localStorage.setItem("user", JSON.stringify(updatedUser.data));
       toast.success("Profile updated successfully!");
     } catch (error) {
-      if ( error.response && (error.response.status === 400 || error.response.status === 404)) {
-        console.error("Error updating user profile:",error.response.data.error);
+      if (error.response && (error.response.status === 400 || error.response.status === 404)) {
+        console.error("Error updating user profile:", error.response.data.error);
         toast.error(error.response.data.error);
       }
     }
@@ -124,7 +124,6 @@ const Profile = () => {
     reader.readAsDataURL(file);
 
     await uploadProfileImage(file);
-    window.location.reload();
   };
 
   const handleDeleteRequest = async (requestId) => {
@@ -157,6 +156,48 @@ const Profile = () => {
       handleDeleteRequest(deleteRequestId);
     }
     handleCloseDialog();
+  };
+
+  const handlePasswordDialogClose = () => {
+    setPasswordDialogOpen(false);
+    setPasswordForm({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
+  };
+
+  const handlePasswordChange = (event) => {
+    const { name, value } = event.target;
+    setPasswordForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordSubmit = async () => {
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error("New passwords don't match");
+      return;
+    }
+
+    try {
+      const updatedUser = await updateUser(user._id, {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      });
+
+      if (updatedUser) {
+        toast.success("Password changed successfully");
+        setPasswordDialogOpen(false);
+        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        setUser(updatedUser.data);
+        localStorage.setItem("user", JSON.stringify(updatedUser.data));
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error("Failed to change password");
+      }
+    }
   };
 
   const renderProperty = (label, value) => (
@@ -246,13 +287,20 @@ const Profile = () => {
                 value={formState.username}
                 onChange={handleChange}
               />
-              <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <Box sx={{ display: "flex", justifyContent: "center", mt: 2, gap: 2 }}>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={handleUpdate}
                 >
                   Update Profile
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setPasswordDialogOpen(true)}
+                >
+                  Change Password
                 </Button>
               </Box>
             </CardContent>
@@ -299,9 +347,8 @@ const Profile = () => {
                             <DeleteIcon />
                           </MuiIconButton>
                         }
-                        title={`Group Name: ${
-                          request.group?.name || "Loading..."
-                        }`}
+                        title={`Group Name: ${request.group?.name || "Loading..."
+                          }`}
                         subheader={
                           <>
                             {request.status === "pending" && (
@@ -364,8 +411,14 @@ const Profile = () => {
         </Grid>
       </Grid>
 
-      <Dialog open={open} onClose={handleCloseDialog}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleCloseDialog}
+        aria-labelledby="delete-request-dialog-title"
+      >
+        <DialogTitle id="delete-request-dialog-title">
+          Confirm Deletion
+        </DialogTitle>
         <DialogContent>
           <Typography>Are you sure you want to delete this request?</Typography>
         </DialogContent>
@@ -373,18 +426,59 @@ const Profile = () => {
           <Button onClick={handleCloseDialog} color="primary">
             Cancel
           </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            sx={{
-              color: "white",
-              backgroundColor: "#dc3838",
-              "&:hover": {
-                backgroundColor: "#ff0000",
-              },
-            }}
-            variant="contained"
-          >
+          <Button onClick={handleConfirmDelete} color="primary">
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={passwordDialogOpen}
+        onClose={handlePasswordDialogClose}
+        aria-labelledby="change-password-dialog-title"
+      >
+        <DialogTitle id="change-password-dialog-title">
+          Change Password
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Current Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            name="currentPassword"
+            value={passwordForm.currentPassword}
+            onChange={handlePasswordChange}
+          />
+          <TextField
+            margin="dense"
+            label="New Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            name="newPassword"
+            value={passwordForm.newPassword}
+            onChange={handlePasswordChange}
+          />
+          <TextField
+            margin="dense"
+            label="Confirm New Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            name="confirmPassword"
+            value={passwordForm.confirmPassword}
+            onChange={handlePasswordChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePasswordDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handlePasswordSubmit} color="primary">
+            Submit
           </Button>
         </DialogActions>
       </Dialog>

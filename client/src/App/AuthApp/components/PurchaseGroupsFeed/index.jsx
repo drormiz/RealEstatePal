@@ -53,7 +53,7 @@ const PurchaseGroupsFeed = () => {
 
   const handleDeleteGroup = async (groupId) => {
     try {
-      await getClient().delete('api/purchaseGroups/${groupId}');
+      await getClient().delete(`api/purchaseGroups/${groupId}`);
       setPurchaseGroups((prevGroups) =>
         prevGroups.filter((group) => group._id !== groupId)
       );
