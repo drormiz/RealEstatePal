@@ -33,7 +33,7 @@ const findPurchaseGroupById = async (id) => {
 
 export const getPurchaseGroups = async (req, res, next) => {
   try {
-    const purchaseGroups = await PurchaseGroupModel.find({});
+    const purchaseGroups = await PurchaseGroupModel.find({}).populate('owner');
     return res.json(purchaseGroups);
   } catch (error) {
     next(error);
