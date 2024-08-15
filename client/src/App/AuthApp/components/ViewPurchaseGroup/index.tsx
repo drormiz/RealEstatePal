@@ -8,6 +8,7 @@ import {
   Button,
   IconButton,
   Divider,
+  Tooltip,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getClient } from "../../../../axios";
@@ -16,15 +17,23 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty"; // Add this for pending
 import { toast } from "react-toastify";
 import { useUser } from "../../contexts/UserContext";
+import EmailIcon from "@mui/icons-material/Email";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 
 interface PurchaseGroup {
   _id: string;
   name: string;
   description: string;
-  members: { _id: string; name: string; username: string; email: string }[];
-  maxMembersCount: Number;
-  participationPrice: Number;
-  profitPercentage: Number;
+  members: {
+    _id: string;
+    name: string;
+    username: string;
+    email: string;
+    phoneNumber?: string;
+  }[];
+  maxMembersCount: number;
+  participationPrice: number;
+  profitPercentage: number;
   purchaseGroupRequests: {
     _id: string;
     priceToInvest: number;
@@ -35,6 +44,7 @@ interface PurchaseGroup {
       name: string;
       username: string;
       email: string;
+      phoneNumber?: string;
     };
   }[];
   owner: {
@@ -42,6 +52,7 @@ interface PurchaseGroup {
     name: string;
     username: string;
     email: string;
+    phoneNumber?: string;
   };
   property: Property;
 }
@@ -102,6 +113,14 @@ const ViewPurchaseGroup: React.FC = () => {
     }
   };
 
+  const handleEmailClick = (email: string) => {
+    window.open(`mailto:${email}`, "_blank");
+  };
+
+  const handleWhatsAppClick = (phone: string) => {
+    window.open(`https://wa.me/${phone}`, "_blank");
+  };
+
   const renderProperty = (label: string, value: React.ReactNode) => (
     <Typography variant="body2" color="textSecondary">
       {label}:{" "}
@@ -131,6 +150,45 @@ const ViewPurchaseGroup: React.FC = () => {
 
   const isCurrentUserOwner = group.owner._id === user._id;
   const userRequest = findUserRequest();
+  const renderContactIcons = (phoneNumber?: string, email?: string) => (
+    <Grid container spacing={12} justifyContent="center">
+      {phoneNumber ? (
+        <>
+          <Grid item>
+            <Tooltip title="Contact via WhatsApp">
+              <IconButton
+                color="primary"
+                onClick={() => phoneNumber && handleWhatsAppClick(phoneNumber)}
+              >
+                <WhatsAppIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+          <Grid item>
+            <Tooltip title="Contact via Email">
+              <IconButton
+                color="primary"
+                onClick={() => email && handleEmailClick(email)}
+              >
+                <EmailIcon />
+              </IconButton>
+            </Tooltip>
+          </Grid>
+        </>
+      ) : (
+        <Grid item xs={12} style={{ textAlign: "center" }}>
+          <Tooltip title="Contact via Email">
+            <IconButton
+              color="primary"
+              onClick={() => email && handleEmailClick(email)}
+            >
+              <EmailIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+      )}
+    </Grid>
+  );
 
   return (
     <Container maxWidth="md" style={{ marginTop: "20px" }}>
@@ -172,14 +230,21 @@ const ViewPurchaseGroup: React.FC = () => {
           <Typography variant="h6" gutterBottom>
             Owner Details:
           </Typography>
-          <Grid item xs={12} sm={6} md={4}>
-            <Card>
-              <CardContent>
-                {renderProperty("Name", group.owner.name)}
-                {renderProperty("Username", group.owner.username)}
-                {renderProperty("Email", group.owner.email)}
-              </CardContent>
-            </Card>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card>
+                <CardContent>
+                  {renderProperty("Name", group.owner.name)}
+                  {renderProperty("Username", group.owner.username)}
+                  {renderProperty("Email", group.owner.email)}
+                  {!isCurrentUserOwner &&
+                    renderContactIcons(
+                      group.owner.phoneNumber,
+                      group.owner.email
+                    )}
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
 
           {group.property && (
@@ -191,16 +256,16 @@ const ViewPurchaseGroup: React.FC = () => {
                 Name: {group.property.name}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Description: {group.property.description}
+                Description: {group.description}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Max Members: {group.property.maxMembersCount}
+                Max Members: {group.maxMembersCount}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Participation Price: {group.property.participationPrice}
+                Participation Price: {group.participationPrice}
               </Typography>
               <Typography variant="body1" gutterBottom>
-                Profit %: {group.property.profitPercentage}
+                Profit %: {group.profitPercentage}
               </Typography>
               {group.property.image && (
                 <img
@@ -223,11 +288,15 @@ const ViewPurchaseGroup: React.FC = () => {
                     {renderProperty("Name", member.name)}
                     {renderProperty("Username", member.username)}
                     {renderProperty("Email", member.email)}
+                    {isCurrentUserOwner &&
+                      member._id !== group.owner._id &&
+                      renderContactIcons(member.phoneNumber, member.email)}
                   </CardContent>
                 </Card>
               </Grid>
             ))}
           </Grid>
+
           {isCurrentUserOwner && (
             <>
               <Typography variant="h6" style={{ marginTop: "20px" }}>
@@ -241,41 +310,44 @@ const ViewPurchaseGroup: React.FC = () => {
                         {renderProperty("Requested by", request.user.name)}
                         {renderProperty("Username", request.user.username)}
                         {renderProperty("Email", request.user.email)}
-                        <Divider style={{ margin: "10px 0" }} />
-                        {renderProperty("Description", request.description)}
                         {renderProperty(
                           "Price to Invest",
                           request.priceToInvest
                         )}
+                        {renderProperty("Description", request.description)}
+
+                        {renderContactIcons(
+                          request.user.phoneNumber,
+                          request.user.email
+                        )}
+                        <Divider style={{ margin: "10px 0" }} />
                         <Grid
                           container
-                          justifyContent="space-between"
-                          alignItems="center"
-                          style={{
-                            marginTop: "10px",
-                            paddingLeft: "15px",
-                            paddingRight: "15px",
-                          }}
+                          spacing={6}
+                          justifyContent={"center"}
+                          style={{ top: "10px", position: "relative" }}
                         >
                           <Grid item>
-                            <IconButton
+                            <Button
+                              variant="contained"
                               color="primary"
                               onClick={() =>
                                 handleStatusChange(request._id, "approved")
                               }
                             >
-                              <CheckCircleOutlineIcon />
-                            </IconButton>
+                              Approve
+                            </Button>
                           </Grid>
                           <Grid item>
-                            <IconButton
-                              color="error"
+                            <Button
+                              variant="contained"
+                              color="secondary"
                               onClick={() =>
                                 handleStatusChange(request._id, "rejected")
                               }
                             >
-                              <HighlightOffIcon />
-                            </IconButton>
+                              Reject
+                            </Button>
                           </Grid>
                         </Grid>
                       </CardContent>
@@ -285,18 +357,6 @@ const ViewPurchaseGroup: React.FC = () => {
               </Grid>
             </>
           )}
-
-          <Grid container spacing={2} style={{ marginTop: "20px" }}>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate("/purchase-groups-feed")}
-              >
-                Back to Purchase Groups
-              </Button>
-            </Grid>
-          </Grid>
         </CardContent>
       </Card>
     </Container>

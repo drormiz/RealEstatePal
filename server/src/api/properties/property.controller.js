@@ -1,4 +1,4 @@
-import { PropertyModel } from '../../models/property.model.js';
+import { PropertyModel } from "../../models/property.model.js";
 
 export const getProperties = async (req, res, next) => {
   try {
@@ -7,10 +7,16 @@ export const getProperties = async (req, res, next) => {
     let properties;
     if (name) {
       properties = await PropertyModel.find({
-        name: { $regex: new RegExp(name, 'i') }
+        name: { $regex: new RegExp(name, "i") },
+      }).populate({
+        path: "owner",
+        select: "_id username name image phoneNumber email",
       });
     } else {
-      properties = await PropertyModel.find({});
+      properties = await PropertyModel.find({}).populate({
+        path: "owner",
+        select: "_id username name image phoneNumber email",
+      });
     }
 
     return res.status(200).json(properties);
@@ -22,7 +28,10 @@ export const getProperties = async (req, res, next) => {
 export const getProperty = async (req, res, next) => {
   try {
     const propertyId = req.params.id;
-    const property = await PropertyModel.findById(propertyId);
+    const property = await PropertyModel.findById(propertyId).populate({
+      path: "owner",
+      select: "_id username name image phoneNumber email",
+    });
 
     return res.json(property);
   } catch (error) {
@@ -39,7 +48,7 @@ export const createProperty = async (req, res) => {
     res.status(201).json(savedProperty);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -54,13 +63,13 @@ export const deleteProperty = async (req, res) => {
     );
 
     if (!deletedProperty) {
-      return res.status(404).json({ error: 'Property not found' });
+      return res.status(404).json({ error: "Property not found" });
     }
 
     res.status(200).json(deletedProperty);
   } catch (error) {
-    console.error('Error deleting Property:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error deleting Property:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -75,12 +84,12 @@ export const updateProperty = async (req, res) => {
     );
 
     if (!updatedProperty) {
-      return res.status(404).json({ error: 'Property not found' });
+      return res.status(404).json({ error: "Property not found" });
     }
 
     res.status(200).json(updatedProperty);
   } catch (error) {
-    console.error('Error updating property:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error updating property:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

@@ -5,8 +5,8 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
 import Box from '@mui/material/Box';
-import { ArrowForward, Edit, GroupAdd, ImageNotSupported } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
+import { GroupAdd, ImageNotSupported, WhatsApp, Email, ArrowForward } from '@mui/icons-material';
+import { IconButton, Tooltip, Grid } from '@mui/material';
 import Carousel from 'react-material-ui-carousel';
 import { useUser } from '../../contexts/UserContext';
 
@@ -17,7 +17,16 @@ const PropertyCard = ({ property }) => {
   const createPurchaseGroupFromProperty = () => {
     navigate("/add-purchase-group", { state: { group: { property: property._id } } });
   }
-  const isUserOwner = user._id === property.owner;
+
+  const handleWhatsAppClick = (phone) => {
+    window.open(`https://wa.me/${phone}`, "_blank");
+  };
+
+  const handleEmailClick = (email) => {
+    window.open(`mailto:${email}`, "_blank");
+  };
+
+  const isUserOwner = user._id === property.owner._id; // Assuming property.owner exists
 
   return (
     <Card
@@ -79,17 +88,44 @@ const PropertyCard = ({ property }) => {
         </Typography>
       </CardContent>
 
-      <CardActions sx={{ justifyContent: 'space-between' }}>
-      <Tooltip title='create purchase group'>
-
       
-      <IconButton
-          onClick={createPurchaseGroupFromProperty}
-          size='small'
-          color='primary'>
-          <GroupAdd />
-        </IconButton>
+      <CardActions sx={{ justifyContent: 'space-between' }}>
+        <Tooltip title='Create Purchase Group'>
+          <IconButton
+            onClick={createPurchaseGroupFromProperty}
+            size='small'
+            color='primary'>
+            <GroupAdd />
+          </IconButton>
         </Tooltip>
+        {!isUserOwner && (
+          <Grid container spacing={2} >
+            {property.owner.phoneNumber && (
+              <Grid item>
+                <Tooltip title="Contact the owner via WhatsApp">
+                  <IconButton
+                    size='small'
+                    color='primary'
+                    onClick={() => handleWhatsAppClick(property.owner.phoneNumber)}
+                  >
+                    <WhatsApp />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            )}
+            <Grid item>
+              <Tooltip title="Contact the owner via Email">
+                <IconButton
+                  size='small'
+                  color='primary'
+                  onClick={() => handleEmailClick(property.owner.email)}
+                >
+                  <Email />
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+        )}
         <IconButton
           component={Link}
           to={`/properties/${property._id}`}

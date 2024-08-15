@@ -6,18 +6,18 @@ import { UserModel } from "../../models/user.model.js";
 const populatePurchaseGroup = [
   {
     path: "members",
-    select: "name username email _id",
+    select: "name username phoneNumber email _id",
   },
   {
     path: "owner",
-    select: "name username email _id",
+    select: "name username phoneNumber email _id",
   },
   {
     path: "purchaseGroupRequests",
     populate: {
       path: "user",
       model: "User",
-      select: "name username email _id",
+      select: "name username phoneNumber email _id",
     },
     select: "priceToInvest description status",
   },
