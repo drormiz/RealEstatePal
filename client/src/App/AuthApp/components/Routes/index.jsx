@@ -4,7 +4,6 @@ import AddPurchaseGroup from '../PurchaseGroupForm/AddPurchaseGroup';
 import PurchaseGroupsFeed from '../PurchaseGroupsFeed/index';
 import AddProperty from '../PropertyForm/AddProperty';
 import EditProperty from '../PropertyForm/EditProperty';
-import JoinPurchaseGroupForm from '../JoinPurchaseGroup/index';
 import ViewPurchaseGroup from '../ViewPurchaseGroup/index';
 import Info from "../Info/index";
 import Properties from '../Properties';
@@ -33,11 +32,8 @@ const AuthenticatedRoutes = () => (
     <Route path='/properties/:id'>
       <Route index element={<EditProperty />} />
     </Route>
-    <Route path='/purchase-groups-feed'>
+    <Route path='/purchasing-groups'>
       <Route index element={<PurchaseGroupsFeed />} />
-    </Route>
-    <Route path='/join-purchase-group'>
-      <Route index element={<JoinPurchaseGroupForm />} />
     </Route>
     <Route path='/view-purchase-group'>
       <Route index element={<ViewPurchaseGroup />} />

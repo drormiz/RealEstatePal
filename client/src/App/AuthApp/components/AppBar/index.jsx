@@ -20,7 +20,7 @@ const AppBar = () => {
       case '/properties':
         setValue('1');
         break;
-      case '/purchase-groups-feed':
+      case '/purchasing-groups':
         setValue('2');
         break;
       case '/info':
@@ -68,7 +68,7 @@ const AppBar = () => {
               <Box sx={{ marginLeft: 2 }}>
                 <TabList onChange={handleChange} aria-label="AppBar tabs">
                   <Tab label="Properties" value="1" component={Link} to='/properties' />
-                  <Tab label="Groups" value="2" component={Link} to='/purchase-groups-feed' />
+                  <Tab label="Groups" value="2" component={Link} to='/purchasing-groups' />
                   <Tab label="My Pal" value="3" component={Link} to='/info' />
                 </TabList>
               </Box>

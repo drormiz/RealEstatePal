@@ -61,7 +61,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
       owner: user._id,
       _id: currentId,
     });
-    navigate("/purchase-groups-feed");
+    navigate("/purchasing-groups");
   };
 
   const isUpdateMode = !!state?.group;

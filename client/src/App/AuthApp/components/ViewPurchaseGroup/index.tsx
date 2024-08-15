@@ -291,7 +291,7 @@ const ViewPurchaseGroup: React.FC = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => navigate("/purchase-groups-feed")}
+                onClick={() => navigate("/purchasing-groups")}
               >
                 Back to Purchase Groups
               </Button>
