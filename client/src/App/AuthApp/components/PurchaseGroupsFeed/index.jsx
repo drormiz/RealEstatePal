@@ -22,6 +22,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../contexts/UserContext";
 import { getClient } from "../../../../axios";
+import JoinPurchaseGroupForm from "../JoinPurchaseGroup";
 
 const PurchaseGroupsFeed = () => {
   const { user } = useUser();
@@ -30,6 +31,8 @@ const PurchaseGroupsFeed = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentGroup, setCurrentGroup] = useState(null);
+  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null); // Added to track the selected group for the dialog
 
   useEffect(() => {
     const fetchPurchaseGroups = async () => {
@@ -76,12 +79,18 @@ const PurchaseGroupsFeed = () => {
     setOpenDeleteDialog(false);
   };
 
-  const handleJoinGroup = (group) => {
-    navigate("/join-purchase-group", { state: { group } });
-  };
-
   const isUserInGroup = (group) => {
     return group.members.includes(user._id);
+  };
+
+  const handleJoinGroup = (group) => {
+    setSelectedGroup(group); // Set the selected group
+    setIsRequestDialogOpen(true); // Open the dialog
+  };
+
+  const handleCloseJoinDialog = () => {
+    setIsRequestDialogOpen(false);
+    setSelectedGroup(null); // Clear the selected group
   };
 
   return (
@@ -100,18 +109,20 @@ const PurchaseGroupsFeed = () => {
                   }}
                 >
                   {!isUserInGroup(group) && (
-                    <IconButton
-                      onClick={() => handleJoinGroup(group)}
-                      color="primary"
-                      style={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        zIndex: 1,
-                      }}
-                    >
-                      <AddIcon />
-                    </IconButton>
+                    <>
+                      <IconButton
+                        onClick={() => handleJoinGroup(group)}
+                        color="primary"
+                        style={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          zIndex: 1,
+                        }}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </>
                   )}
                   {isUserInGroup(group) && (
                     <IconButton
@@ -189,6 +200,12 @@ const PurchaseGroupsFeed = () => {
           />
         </Grid>
       </Grid>
+
+      <JoinPurchaseGroupForm
+        isOpen={isRequestDialogOpen}
+        group={selectedGroup}
+        onClose={handleCloseJoinDialog}
+      />
 
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Delete Confirmation</DialogTitle>
