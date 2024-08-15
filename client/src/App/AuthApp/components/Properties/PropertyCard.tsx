@@ -55,7 +55,7 @@ const PropertyCard = ({ property }) => {
                   style={{
                     width: "100%",
                     height: "160px",
-                    objectFit: "contain",
+                    objectFit: "fill",
                   }}
                 />
               ))}
