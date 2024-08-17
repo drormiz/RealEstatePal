@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const addEditPropertyFormSchema = z.object({
+export const PropertyFormSchema = z.object({
     name: z.string().min(1),
     description: z.string().min(1),
     price: z.coerce.number().min(1),

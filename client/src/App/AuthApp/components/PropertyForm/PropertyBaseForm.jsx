@@ -6,7 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "../../../../Providers/UserProvider";
-import { addEditPropertyFormSchema } from "./validationSchema";
+import { PropertyFormSchema } from "./validationSchema";
 import { uploadRequest } from "../../../../axios";
 import { propertyType } from "../../consts/property-type.const";
 
@@ -14,7 +14,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
   const navigate = useNavigate();
   const { user } = useUser();
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: zodResolver(addEditPropertyFormSchema)});
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: zodResolver(PropertyFormSchema)});
   const [selectedImages, setSelectedImages] = useState([]);
   const [propertyImages, setPropertyImages] = useState([]);
   const isPropertyOwnedUser = property?.owner === user._id;
