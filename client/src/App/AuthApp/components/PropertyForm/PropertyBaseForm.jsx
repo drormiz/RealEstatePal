@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Paper, Grid, Stack, TextField, FormControl, InputLabel, Select, MenuItem, Button, Typography, Box, IconButton } from "@mui/material";
+import {
+  Paper,
+  Grid,
+  Stack,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
+  Typography,
+  Box,
+  IconButton,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
@@ -9,14 +22,25 @@ import { useUser } from "../../../../Providers/UserProvider";
 import { addEditPropertyFormSchema } from "./validationSchema";
 import { uploadRequest } from "../../../../axios";
 import { propertyType } from "../../consts/property-type.const";
+import LocationPicker from "./LocationPicker";
 
 const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
   const navigate = useNavigate();
   const { user } = useUser();
 
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: zodResolver(addEditPropertyFormSchema)});
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(addEditPropertyFormSchema) });
   const [selectedImages, setSelectedImages] = useState([]);
   const [propertyImages, setPropertyImages] = useState([]);
+  const [location, setLocation] = useState({
+    latitude: property?.latitude || null,
+    longitude: property?.longitude || null,
+  });
+
   const isPropertyOwnedUser = property?.owner === user._id;
 
   useEffect(() => {
@@ -25,9 +49,14 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
         setValue(key, value);
       });
 
+      setLocation({
+        latitude: property.latitude,
+        longitude: property.longitude,
+      });
+
       setPropertyImages(property.images);
     }
-  }, []);
+  }, [property, setValue]);
 
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files);
@@ -39,7 +68,9 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
   };
 
   const handleRemoveImage = (url) => {
-    setSelectedImages((prevImages) => prevImages.filter((img) => img.url !== url));
+    setSelectedImages((prevImages) =>
+      prevImages.filter((img) => img.url !== url)
+    );
   };
 
   const handleRemovePropertyImage = (url) => {
@@ -64,6 +95,8 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
       const formData = {
         ...data,
         images: [...imageUrls, ...propertyImages],
+        latitude: location.latitude,
+        longitude: location.longitude,
       };
 
       await onSubmitHandler({
@@ -74,29 +107,38 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
         _id: property?._id,
       });
 
-      navigate('/properties');
+      navigate("/properties");
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
-      <Paper sx={{ padding: '20px', margin: '50px', borderRadius: '12px', backgroundColor: '#f9f9f9', maxHeight: '80vh', overflow: 'auto' }}>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+      <Paper
+        sx={{
+          padding: "20px",
+          margin: "50px",
+          borderRadius: "12px",
+          backgroundColor: "#f9f9f9",
+          maxHeight: "80vh",
+          overflow: "auto",
+        }}
+      >
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <Stack spacing={3}>
               <TextField
-                disabled={(property && !isPropertyOwnedUser)}
+                disabled={property && !isPropertyOwnedUser}
                 {...register("name")}
                 label="Property Name"
                 variant="outlined"
                 fullWidth
                 error={!!errors.name}
-                helperText={errors.name ? 'Name is required' : ''}
+                helperText={errors.name ? "Name is required" : ""}
               />
               <TextField
-                disabled={(property && !isPropertyOwnedUser)}
+                disabled={property && !isPropertyOwnedUser}
                 {...register("price")}
                 label="Price ($)"
                 type="number"
@@ -104,10 +146,10 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 variant="outlined"
                 fullWidth
                 error={!!errors.price}
-                helperText={errors.price ? 'Price is required' : ''}
+                helperText={errors.price ? "Price is required" : ""}
               />
               <TextField
-                disabled={(property && !isPropertyOwnedUser)}
+                disabled={property && !isPropertyOwnedUser}
                 {...register("meters")}
                 label="Size (sq. meters)"
                 type="number"
@@ -115,10 +157,10 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 variant="outlined"
                 fullWidth
                 error={!!errors.meters}
-                helperText={errors.meters ? 'Size is required' : ''}
+                helperText={errors.meters ? "Size is required" : ""}
               />
               <TextField
-                disabled={(property && !isPropertyOwnedUser)}
+                disabled={property && !isPropertyOwnedUser}
                 {...register("numberOfRooms")}
                 label="Number of Rooms"
                 type="number"
@@ -126,10 +168,12 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 variant="outlined"
                 fullWidth
                 error={!!errors.numberOfRooms}
-                helperText={errors.numberOfRooms ? 'Number of rooms is required' : ''}
+                helperText={
+                  errors.numberOfRooms ? "Number of rooms is required" : ""
+                }
               />
               <TextField
-                disabled={(property && !isPropertyOwnedUser)}
+                disabled={property && !isPropertyOwnedUser}
                 {...register("floor")}
                 label="Floor"
                 type="number"
@@ -137,12 +181,12 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 variant="outlined"
                 fullWidth
                 error={!!errors.floor}
-                helperText={errors.floor ? 'Floor is required' : ''}
+                helperText={errors.floor ? "Floor is required" : ""}
               />
               <FormControl fullWidth>
                 <InputLabel id="property-type-label">Property Type</InputLabel>
                 <Select
-                  disabled={(property && !isPropertyOwnedUser)}
+                  disabled={property && !isPropertyOwnedUser}
                   {...register("propertyType")}
                   labelId="property-type-label"
                   label="Property Type"
@@ -150,13 +194,15 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                   error={!!errors.propertyType}
                   defaultValue={property?.propertyType || ""}
                 >
-                  {Object.keys(propertyType).map(key => (
-                    <MenuItem key={key} value={propertyType[key]}>{propertyType[key]}</MenuItem>
+                  {Object.keys(propertyType).map((key) => (
+                    <MenuItem key={key} value={propertyType[key]}>
+                      {propertyType[key]}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>
               <TextField
-                disabled={(property && !isPropertyOwnedUser)}
+                disabled={property && !isPropertyOwnedUser}
                 {...register("description")}
                 label="Description"
                 multiline
@@ -164,29 +210,52 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 variant="outlined"
                 fullWidth
                 error={!!errors.description}
-                helperText={errors.description ? 'Description is required' : ''}
+                helperText={errors.description ? "Description is required" : ""}
               />
-
+              <LocationPicker
+                setLocation={(location) => {
+                  setValue("latitude", location.latitude);
+                  setValue("longitude", location.longitude);
+                  setLocation(location);
+                }}
+                initialLocation={{
+                  latitude: property?.latitude || null,
+                  longitude: property?.longitude || null,
+                }}
+              />
+              {errors.latitude && (
+                <Typography color="error">{errors.latitude.message}</Typography>
+              )}
               <label style={{ fontSize: "large" }}>
-                <input style={{ width: '20px', height: '20px' }} type="checkbox" {...register('hasElevator')} disabled={(property && !isPropertyOwnedUser)} />
+                <input
+                  style={{ width: "20px", height: "20px" }}
+                  type="checkbox"
+                  {...register("hasElevator")}
+                  disabled={property && !isPropertyOwnedUser}
+                />
                 Is there an elevator?
               </label>
             </Stack>
           </Grid>
           <Grid item xs={12} md={6}>
             <Stack spacing={3}>
-              <Typography sx={{ textDecoration: 'underline' }} variant="h4" gutterBottom>Property Images</Typography>
-              {
-                !(property && !isPropertyOwnedUser) &&
+              <Typography
+                sx={{ textDecoration: "underline" }}
+                variant="h4"
+                gutterBottom
+              >
+                Property Images
+              </Typography>
+              {!(property && !isPropertyOwnedUser) && (
                 <>
                   <input
-                    disabled={(property && !isPropertyOwnedUser)}
+                    disabled={property && !isPropertyOwnedUser}
                     {...register("images")}
                     accept="image/*"
                     id="upload-images"
                     multiple
                     type="file"
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                     onChange={handleImageChange}
                   />
                   <label htmlFor="upload-images">
@@ -200,38 +269,41 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                     </Button>
                   </label>
                 </>
-              }
-              <Grid sx={{ height: '400px', overflow: "auto" }} container spacing={2}>
+              )}
+              <Grid
+                sx={{ height: "400px", overflow: "auto" }}
+                container
+                spacing={2}
+              >
                 {selectedImages.map((image, index) => (
                   <Grid item key={index} xs={4}>
                     <Box
                       sx={{
-                        position: 'relative',
-                        width: '100%',
-                        height: '120px',
+                        position: "relative",
+                        width: "100%",
+                        height: "120px",
                         backgroundImage: `url(${image.url})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        borderRadius: '8px',
-                        overflow: 'hidden',
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        borderRadius: "8px",
+                        overflow: "hidden",
                       }}
                     >
-                      {
-                        !(property && !isPropertyOwnedUser) &&
+                      {!(property && !isPropertyOwnedUser) && (
                         <IconButton
                           size="small"
                           sx={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            backgroundColor: 'rgba(255, 0, 0, 0.7)',
-                            color: 'white',
+                            position: "absolute",
+                            top: "8px",
+                            right: "8px",
+                            backgroundColor: "rgba(255, 0, 0, 0.7)",
+                            color: "white",
                           }}
                           onClick={() => handleRemoveImage(image.url)}
                         >
                           <CloseIcon fontSize="small" />
                         </IconButton>
-                      }
+                      )}
                     </Box>
                   </Grid>
                 ))}
@@ -239,32 +311,31 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                   <Grid item key={index} xs={4}>
                     <Box
                       sx={{
-                        position: 'relative',
-                        width: '100%',
-                        height: '120px',
+                        position: "relative",
+                        width: "100%",
+                        height: "120px",
                         backgroundImage: `url(${image})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        borderRadius: '8px',
-                        overflow: 'hidden',
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        borderRadius: "8px",
+                        overflow: "hidden",
                       }}
                     >
-                      {
-                        !(property && !isPropertyOwnedUser) &&
+                      {!(property && !isPropertyOwnedUser) && (
                         <IconButton
                           size="small"
                           sx={{
-                            position: 'absolute',
-                            top: '8px',
-                            right: '8px',
-                            backgroundColor: 'rgba(255, 0, 0, 0.7)',
-                            color: 'white',
+                            position: "absolute",
+                            top: "8px",
+                            right: "8px",
+                            backgroundColor: "rgba(255, 0, 0, 0.7)",
+                            color: "white",
                           }}
                           onClick={() => handleRemovePropertyImage(image)}
                         >
                           <CloseIcon fontSize="small" />
                         </IconButton>
-                      }
+                      )}
                     </Box>
                   </Grid>
                 ))}
@@ -272,19 +343,28 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
             </Stack>
           </Grid>
         </Grid>
-        {
-          !(property && !isPropertyOwnedUser) &&
-          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
+        {!(property && !isPropertyOwnedUser) && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "30px",
+            }}
+          >
             <Button
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ padding: '12px 24px', borderRadius: '8px', fontWeight: 'bold' }}
+              sx={{
+                padding: "12px 24px",
+                borderRadius: "8px",
+                fontWeight: "bold",
+              }}
             >
-              {property ? 'Update property' : 'Add property'}
+              {property ? "Update property" : "Add property"}
             </Button>
           </Box>
-        }
+        )}
       </Paper>
     </form>
   );
