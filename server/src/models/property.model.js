@@ -17,18 +17,20 @@ const PropertySchema = new Schema(
     // loction: {type: String},
     propertyType: {
       type: String,
-      enum: ['other', 'Penthouse', 'Two floor', 'Ground floor', 'Studio'],
+      enum: ["other", "Penthouse", "Two floor", "Ground floor", "Studio"],
     },
     numberOfRooms: {
-      type: Number
+      type: Number,
     },
-    floor: {type: Number},
-    hasElevator: {type: Boolean},
+    floor: { type: Number },
+    hasElevator: { type: Boolean },
     images: { type: [String] },
     purchaseGroup: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "PurchaseGroup",
     },
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
   },
   { timestamps: true }
 );
