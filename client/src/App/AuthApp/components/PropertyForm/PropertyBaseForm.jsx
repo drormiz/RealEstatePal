@@ -119,7 +119,6 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
           margin: "50px",
           borderRadius: "12px",
           backgroundColor: "#f9f9f9",
-          maxHeight: "80vh",
           overflow: "auto",
         }}
       >
