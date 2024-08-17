@@ -17,7 +17,7 @@ const PropertySchema = new Schema(
     // loction: {type: String},
     propertyType: {
       type: String,
-      enum: ['other', 'Penthouse', 'Two floor', 'Ground floor', 'Studio'],
+      enum: ['Other', 'Penthouse', 'Two floor', 'Ground floor', 'Studio'],
     },
     numberOfRooms: {
       type: Number

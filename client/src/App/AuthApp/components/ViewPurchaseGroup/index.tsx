@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
-  Container,
   Typography,
   Card,
   CardContent,
   Grid,
-  Button,
   IconButton,
   Divider,
+  Stack,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Box,
 } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
-import { getClient } from "../../../../axios";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty"; // Add this for pending
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { toast } from "react-toastify";
+
+import { getClient } from "../../../../axios";
 import { useUser } from "../../contexts/UserContext";
+import PurchaseGroupImages from "./Components/PurchaseGroupImages";
+import UserAvatar from "../AppBar/components/UserAvatar";
 
 interface PurchaseGroup {
   _id: string;
@@ -50,14 +58,14 @@ interface Property {
   _id: string;
   name: string;
   description: string;
-  image: string;
+  images: string[];
 }
 
 const ViewPurchaseGroup: React.FC = () => {
   const [group, setGroup] = useState<PurchaseGroup | null>(null);
   const location = useLocation();
-  const navigate = useNavigate();
   const { user } = useUser();
+  const navigate = useNavigate();
   const groupId = location.state?.groupId;
 
   useEffect(() => {
@@ -85,8 +93,7 @@ const ViewPurchaseGroup: React.FC = () => {
       if (response.status === 200) {
         setGroup(response.data);
         toast.success(
-          `Request ${
-            status === "approved" ? "approved" : "rejected"
+          `Request ${status === "approved" ? "approved" : "rejected"
           } successfully!`
         );
       } else {
@@ -122,7 +129,7 @@ const ViewPurchaseGroup: React.FC = () => {
   };
 
   if (!group) {
-    return <Typography variant="h6">Loading...</Typography>;
+    return <Typography variant="h6">{'Loading...'}</Typography>;
   }
 
   const pendingRequests = group.purchaseGroupRequests.filter(
@@ -133,44 +140,53 @@ const ViewPurchaseGroup: React.FC = () => {
   const userRequest = findUserRequest();
 
   return (
-    <Container maxWidth="md" style={{ marginTop: "20px" }}>
-      <Card>
+    <Stack direction={'row'} sx={{padding: '20px'}}>
+      {/* <IconButton sx={{alignSelf: 'start', margin: '5px 0px 0px 10px'}}>
+        <ArrowBackIcon onClick={() => navigate("/purchase-groups-feed")} />
+      </IconButton> */}
+      <Box >
         <CardContent>
-          <Typography variant="h4" gutterBottom>
-            {group.name}
-          </Typography>
-          <Typography variant="body1" paragraph>
-            {group.description}
-          </Typography>
-
-          {userRequest && (
-            <Typography
-              variant="body1"
-              style={{
-                color: userRequest.status === "pending" ? "orange" : "red",
-                paddingBottom: "16px",
-              }}
-            >
-              {userRequest.status === "pending" ? (
-                <>
-                  <HourglassEmptyIcon
-                    style={{ verticalAlign: "middle", marginRight: "8px" }}
-                  />
-                  Your request is pending approval.
-                </>
-              ) : userRequest.status === "rejected" ? (
-                <>
-                  <HighlightOffIcon
-                    style={{ verticalAlign: "middle", marginRight: "8px" }}
-                  />
-                  Your request was rejected by the Admin of the group.
-                </>
-              ) : null}
+          <Stack direction={'row'} spacing={2} sx={{ alignItems: 'center' }}>
+            <Typography variant="h4" gutterBottom>
+              {group.name}
             </Typography>
-          )}
-
-          <Typography variant="h6" gutterBottom>
-            Owner Details:
+            {userRequest && (
+              <Typography
+                variant={'body1'}
+                sx={{ color: userRequest.status === "pending" ? "orange" : "red" }}>
+                {userRequest.status === "pending" ? (
+                  <>
+                    <HourglassEmptyIcon
+                      sx={{ justifyContent: "middle", marginRight: "8px" }}
+                    />
+                    {'Your request is pending approval.'}
+                  </>
+                ) : userRequest.status === "rejected" ? (
+                  <>
+                    <HighlightOffIcon
+                      style={{ verticalAlign: "middle", marginRight: "8px" }}
+                    />
+                    {'Your request was rejected by the Admin of the group.'}
+                  </>
+                ) : null}
+              </Typography>
+            )}
+          </Stack>
+          <Typography variant="h6" gutterBottom marginTop={4}>
+            {'Group Details'}
+          </Typography>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card>
+              <CardContent>
+                {renderProperty("Description", group.description)}
+                {renderProperty("Max Members", group.maxMembersCount)}
+                {renderProperty("Participation Price", `₪${Number(group.participationPrice).toLocaleString()}`)}
+                {renderProperty("Estimated Profit %", group.profitPercentage)}
+              </CardContent>
+            </Card>
+          </Grid>
+          <Typography variant="h6" gutterBottom marginTop={4}>
+            {'Owner Details'}
           </Typography>
           <Grid item xs={12} sm={6} md={4}>
             <Card>
@@ -181,57 +197,43 @@ const ViewPurchaseGroup: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-
           {group.property && (
             <>
-              <Typography variant="h6" gutterBottom paddingTop={5}>
-                Property Details:
+              <Typography variant="h6" gutterBottom marginTop={4}>
+                {'Property Details'}
               </Typography>
-              <Typography variant="body1">
-                Name: {group.property.name}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Description: {group.property.description}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Max Members: {group.property.maxMembersCount}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Participation Price: {group.property.participationPrice}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                Profit %: {group.property.profitPercentage}
-              </Typography>
-              {group.property.image && (
-                <img
-                  src={group.property.image}
-                  alt={group.property.name}
-                  style={{ maxWidth: "300px", maxHeight: "300px" }}
-                />
-              )}
-            </>
-          )}
-
-          <Typography variant="h6" paddingTop={5}>
-            Members:
-          </Typography>
-          <Grid container spacing={2}>
-            {group.members.map((member) => (
-              <Grid item xs={12} sm={6} md={4} key={member._id}>
+              <Grid item xs={12} sm={6} md={4} sx={{ marginBottom: '10px' }}>
                 <Card>
                   <CardContent>
-                    {renderProperty("Name", member.name)}
-                    {renderProperty("Username", member.username)}
-                    {renderProperty("Email", member.email)}
+                    {renderProperty("Name", group.property.name)}
+                    {renderProperty("Description", group.property.description)}
+                    {renderProperty("Email", group.owner.email)}
                   </CardContent>
                 </Card>
               </Grid>
+              <PurchaseGroupImages images={group.property.images} />
+            </>
+          )}
+          <Typography variant="h6" paddingTop={5}>
+            {'Members'}
+          </Typography>
+          <List>
+            {group.members.map((member) => (
+              <ListItem key={member._id}>
+                <ListItemAvatar>
+                  <UserAvatar user={member} height={40} width={40} />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={member.name}
+                  secondary={member.email}
+                />
+              </ListItem>
             ))}
-          </Grid>
+          </List>
           {isCurrentUserOwner && (
             <>
               <Typography variant="h6" style={{ marginTop: "20px" }}>
-                Pending Requests:
+                {'Pending Requests'}
               </Typography>
               <Grid container spacing={2}>
                 {pendingRequests.map((request) => (
@@ -285,21 +287,9 @@ const ViewPurchaseGroup: React.FC = () => {
               </Grid>
             </>
           )}
-
-          <Grid container spacing={2} style={{ marginTop: "20px" }}>
-            <Grid item>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate("/purchase-groups-feed")}
-              >
-                Back to Purchase Groups
-              </Button>
-            </Grid>
-          </Grid>
         </CardContent>
-      </Card>
-    </Container>
+      </Box>
+    </Stack>
   );
 };
 

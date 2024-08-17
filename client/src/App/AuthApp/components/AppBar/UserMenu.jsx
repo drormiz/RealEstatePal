@@ -8,7 +8,6 @@ import {
 } from '@mui/icons-material';
 import GroupsIcon from '@mui/icons-material/Groups';
 import {
-  Avatar,
   IconButton,
   ListItemIcon,
   Menu,
@@ -20,20 +19,10 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import stringToColor from 'string-to-color';
 import { useColorMode } from '../../../../Providers/ThemeProvider';
 import { useUser } from '../../../../Providers/UserProvider';
 import { logoutUserFn } from '../../../../axios/auth';
-
-const getInitials = fullName =>
-  fullName === ''
-    ? ''
-    : fullName
-        .trim()
-        .split(/\s+/)
-        .map(name => name[0].toUpperCase())
-        .join('')
-        .slice(0, 3);
+import UserAvatar from './components/UserAvatar';
 
 const UserMenu = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -99,15 +88,7 @@ const UserMenu = () => {
     <>
       <Tooltip title='Account settings'>
         <IconButton onClick={openMenu}>
-          <Avatar
-            src={user.image || ''}
-            sx={{
-              bgcolor: !user.image ? stringToColor(user.name) : primary.main,
-              width: 60,
-              height: 60
-            }}>
-            {!user.image && getInitials(user.name)}
-          </Avatar>
+          <UserAvatar user={user} />
         </IconButton>
       </Tooltip>
       <Menu open={Boolean(anchorEl)} anchorEl={anchorEl} onClose={closeMenu}>
