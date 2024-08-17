@@ -15,7 +15,6 @@ const AppBar = () => {
   const [value, setValue] = useState('1');
 
   useEffect(() => {
-    // Determine the tab value based on the current path
     switch (location.pathname) {
       case '/properties':
         setValue('1');
@@ -70,6 +69,7 @@ const AppBar = () => {
                   <Tab label="Properties" value="1" component={Link} to='/properties' />
                   <Tab label="Groups" value="2" component={Link} to='/purchasing-groups' />
                   <Tab label="My Pal" value="3" component={Link} to='/info' />
+                  <Tab label="Statistics" value="3" component={Link} to='/statistics' />
                 </TabList>
               </Box>
             </TabContext>

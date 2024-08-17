@@ -8,6 +8,7 @@ import ViewPurchaseGroup from '../ViewPurchaseGroup/index';
 import Info from "../Info/index";
 import Properties from '../Properties';
 import HomePage from '../HomePage/index';
+import Statistics from '../Statistics';
 
 const AuthenticatedRoutes = () => (
   <Routes>
@@ -40,6 +41,9 @@ const AuthenticatedRoutes = () => (
     </Route>
     <Route path="/info">
       <Route index element={<Info />} />
+    </Route>
+    <Route path="/statistics">
+      <Route index element={<Statistics />} />
     </Route>
     <Route path='*' element={<Navigate to='/' />} />
   </Routes>
