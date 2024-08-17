@@ -19,7 +19,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "../../../../Providers/UserProvider";
-import { addEditPropertyFormSchema } from "./validationSchema";
+import { PropertyFormSchema } from "./validationSchema";
 import { uploadRequest } from "../../../../axios";
 import { propertyType } from "../../consts/property-type.const";
 import LocationPicker from "./LocationPicker";
@@ -33,14 +33,13 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(addEditPropertyFormSchema) });
+  } = useForm({ resolver: zodResolver(PropertyFormSchema) });
   const [selectedImages, setSelectedImages] = useState([]);
   const [propertyImages, setPropertyImages] = useState([]);
   const [location, setLocation] = useState({
     latitude: property?.latitude || null,
     longitude: property?.longitude || null,
   });
-
   const isPropertyOwnedUser = property?.owner === user._id;
 
   useEffect(() => {
@@ -48,7 +47,6 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
       Object.entries(property).forEach(([key, value]) => {
         setValue(key, value);
       });
-
       setLocation({
         latitude: property.latitude,
         longitude: property.longitude,
