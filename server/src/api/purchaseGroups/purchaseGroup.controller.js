@@ -109,18 +109,11 @@ export const deletePurchaseGroup = async (req, res) => {
       purchaseGroupId
     );
 
-    if (!!deletedPurchaseGroup.property) {
-      const property = await PropertyModel.findById(deletedPurchaseGroup.property);
-
-      property.set('purchaseGroup', undefined, { strict: false });
-      property.markModified('purchaseGroup');
-
-      await property.save();
-    }
-
     if (!deletedPurchaseGroup) {
       return res.status(404).json({ error: "PurchaseGroup not found" });
     }
+
+    await PurchaseGroupRequestModel.deleteMany({ group: purchaseGroupId });
 
     res.status(200).json(deletedPurchaseGroup);
   } catch (error) {

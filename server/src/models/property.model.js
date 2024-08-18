@@ -25,10 +25,6 @@ const PropertySchema = new Schema(
     floor: { type: Number },
     hasElevator: { type: Boolean },
     images: { type: [String] },
-    purchaseGroup: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "PurchaseGroup",
-    },
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
   },
