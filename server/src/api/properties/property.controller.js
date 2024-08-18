@@ -2,16 +2,27 @@ import { PropertyModel } from '../../models/property.model.js';
 
 export const getProperties = async (req, res, next) => {
   try {
-    const { name } = req.query;
+    const { name, type } = req.query; // Get type from query params
 
-    let properties;
+    let filter = {};
+
+    // Apply name filter if provided
     if (name) {
-      properties = await PropertyModel.find({
-        name: { $regex: new RegExp(name, 'i') }
-      });
-    } else {
-      properties = await PropertyModel.find({});
+      filter.name = { $regex: new RegExp(name, 'i') };
     }
+
+    if (type && type !== 'All') {
+      filter.propertyType = type;
+    }
+
+    console.log(filter);
+
+    const properties = await PropertyModel.find({ ...filter }).populate({
+      path: 'owner',
+      select: '_id username name image phoneNumber email'
+    });
+
+    console.log(properties);
 
     return res.status(200).json(properties);
   } catch (error) {
@@ -22,7 +33,10 @@ export const getProperties = async (req, res, next) => {
 export const getProperty = async (req, res, next) => {
   try {
     const propertyId = req.params.id;
-    const property = await PropertyModel.findById(propertyId);
+    const property = await PropertyModel.findById(propertyId).populate({
+      path: 'owner',
+      select: '_id username name image phoneNumber email'
+    });
 
     return res.json(property);
   } catch (error) {

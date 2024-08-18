@@ -13,23 +13,23 @@ import {
   DialogActions,
   IconButton,
   Box,
+  InputAdornment,
+  Skeleton,
+  Fab,
+  Tooltip
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from "@mui/icons-material/Add";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../../contexts/UserContext";
 import { getClient } from "../../../../axios";
+import JoinPurchaseGroupForm from "../JoinPurchaseGroup";
+import PurchaseGroupCard from "./PurchaseGroupCard";
 
 const PurchaseGroupsFeed = () => {
-  const { user } = useUser();
-  const navigate = useNavigate();
   const [purchaseGroups, setPurchaseGroups] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentGroup, setCurrentGroup] = useState(null);
+  const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null); // Added to track the selected group for the dialog
 
   useEffect(() => {
     const fetchPurchaseGroups = async () => {
@@ -63,10 +63,6 @@ const PurchaseGroupsFeed = () => {
     setOpenDeleteDialog(false);
   };
 
-  const handleEditGroup = (group) => {
-    navigate("/add-purchase-group", { state: { group } });
-  };
-
   const handleOpenDeleteDialog = (group) => {
     setCurrentGroup(group);
     setOpenDeleteDialog(true);
@@ -76,119 +72,95 @@ const PurchaseGroupsFeed = () => {
     setOpenDeleteDialog(false);
   };
 
-  const handleJoinGroup = (group) => {
-    navigate("/join-purchase-group", { state: { group } });
+  const handleCloseJoinDialog = () => {
+    setIsRequestDialogOpen(false);
+    setSelectedGroup(null); // Clear the selected group
   };
 
-  const isUserInGroup = (group) => {
-    return group.members.includes(user._id);
+  const handleJoinGroup = (group) => {
+    setSelectedGroup(group); // Set the selected group
+    setIsRequestDialogOpen(true); // Open the dialog
   };
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: "20px" }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={9}>
-          <Grid container spacing={3}>
-            {filteredGroups.map((group) => (
-              <Grid item key={group._id} xs={12} sm={6} md={4}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    position: "relative",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  {!isUserInGroup(group) && (
-                    <IconButton
-                      onClick={() => handleJoinGroup(group)}
-                      color="primary"
-                      style={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        zIndex: 1,
-                      }}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  )}
-                  {isUserInGroup(group) && (
-                    <IconButton
-                      color="primary"
-                      style={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        zIndex: 1,
-                      }}
-                      disabled
-                    >
-                      <CheckCircleIcon />
-                    </IconButton>
-                  )}
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography variant="h5" component="div" gutterBottom>
-                      {group.name}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {group.description}
-                    </Typography>
-                  </CardContent>
-                  {group.owner === user._id && (
-                    <Box
-                      display="flex"
-                      justifyContent="space-between"
-                      px={2}
-                      pb={1}
-                    >
-                      <IconButton
-                        onClick={() => handleOpenDeleteDialog(group)}
-                        color="error"
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => handleEditGroup(group)}
-                        color="inherit"
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Box>
-                  )}
-                  <Box p={2}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={() =>
-                        navigate("/view-purchase-group", {
-                          state: { groupId: group._id },
-                        })
-                      }
-                    >
-                      View Group
-                    </Button>
-                  </Box>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
-        <Grid item xs={12} md={3}>
+    <Container >
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '20px'
+        }}>
+        <Typography
+          variant='h3'
+          sx={{
+            borderBottom: '3px solid',
+            borderColor: 'primary.main',
+            paddingBottom: '8px',
+            display: 'inline-block'
+          }}>
+          Groups
+        </Typography>
+
+        <Box
+          sx={{
+            flex: 1,
+            maxWidth: '600px',
+            marginLeft: '20px'
+          }}>
           <TextField
             label="Search Purchase Groups"
             variant="outlined"
             fullWidth
             value={searchTerm}
             onChange={handleSearchChange}
+
             InputProps={{
-              startAdornment: <SearchIcon />,
+              startAdornment: (
+                <InputAdornment position='start'>
+                  <SearchIcon sx={{ color: 'text.secondary' }} />
+                </InputAdornment>
+              )
             }}
-            sx={{ mb: 2 }}
+            sx={{
+              backgroundColor: 'background.paper',
+              borderRadius: '8px',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '8px',
+                '& fieldset': {
+                  borderColor: 'divider'
+                },
+                '&:hover fieldset': {
+                  borderColor: 'primary.main'
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'primary.main'
+                }
+              },
+              '& .MuiInputBase-input': {
+                padding: '12px 14px',
+                fontSize: '1rem'
+              }
+            }}
           />
+        </Box>
+      </Box>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={9}>
+          <Grid container spacing={3}>
+            {filteredGroups.map((group) => (
+              <PurchaseGroupCard handleJoinGroup={handleJoinGroup} group={group} handleOpenDeleteDialog={handleOpenDeleteDialog}/>     
+            ))}
+          </Grid>
         </Grid>
+     
       </Grid>
+
+      <JoinPurchaseGroupForm
+        isOpen={isRequestDialogOpen}
+        group={selectedGroup}
+        onClose={handleCloseJoinDialog}
+      />
 
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Delete Confirmation</DialogTitle>

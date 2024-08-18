@@ -6,18 +6,18 @@ import { UserModel } from '../../models/user.model.js';
 const populatePurchaseGroup = [
   {
     path: 'members',
-    select: 'name username email image _id',
+    select: 'name username phoneNumber email image _id',
   },
   {
-    path: 'owner',
-    select: 'name username email _id',
+    path: "owner",
+    select: "name username phoneNumber email _id",
   },
   {
     path: 'purchaseGroupRequests',
     populate: {
-      path: 'user',
-      model: 'User',
-      select: 'name username email _id',
+      path: "user",
+      model: "User",
+      select: "name username phoneNumber email _id",
     },
     select: 'priceToInvest description status',
   },
@@ -30,7 +30,7 @@ const populatePurchaseGroup = [
 const findPurchaseGroupById = (id) =>
   PurchaseGroupModel.findById(id).populate(populatePurchaseGroup);
 
-export const getPurchaseGroups = ({}, {}) => PurchaseGroupModel.find();
+export const getPurchaseGroups = ({}, {}) => PurchaseGroupModel.find().populate('owner');
 
 export const getPurchaseGroupById = async (req, res, next) => {
   const { id } = req.params;
@@ -100,20 +100,11 @@ export const deletePurchaseGroup = async (req, res) => {
       purchaseGroupId
     );
 
-    if (!!deletedPurchaseGroup.property) {
-      const property = await PropertyModel.findById(
-        deletedPurchaseGroup.property
-      );
-
-      property.set('purchaseGroup', undefined, { strict: false });
-      property.markModified('purchaseGroup');
-
-      await property.save();
-    }
-
     if (!deletedPurchaseGroup) {
       return res.status(404).json({ error: 'PurchaseGroup not found' });
     }
+
+    await PurchaseGroupRequestModel.deleteMany({ group: purchaseGroupId });
 
     res.status(200).json(deletedPurchaseGroup);
   } catch (error) {

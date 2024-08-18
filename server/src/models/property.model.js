@@ -20,15 +20,13 @@ const PropertySchema = new Schema(
       enum: ['Other', 'Penthouse', 'Two floor', 'Ground floor', 'Studio'],
     },
     numberOfRooms: {
-      type: Number
+      type: Number,
     },
-    floor: {type: Number},
-    hasElevator: {type: Boolean},
+    floor: { type: Number },
+    hasElevator: { type: Boolean },
     images: { type: [String] },
-    purchaseGroup: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "PurchaseGroup",
-    },
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
   },
   { timestamps: true }
 );

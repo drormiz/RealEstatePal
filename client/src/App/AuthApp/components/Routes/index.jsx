@@ -4,15 +4,16 @@ import AddPurchaseGroup from '../PurchaseGroupForm/AddPurchaseGroup';
 import PurchaseGroupsFeed from '../PurchaseGroupsFeed/index';
 import AddProperty from '../PropertyForm/AddProperty';
 import EditProperty from '../PropertyForm/EditProperty';
-import JoinPurchaseGroupForm from '../JoinPurchaseGroup/index';
 import ViewPurchaseGroup from '../ViewPurchaseGroup/index';
-import Info from "../Info/index";
+import Info from '../Info/index';
 import Properties from '../Properties';
-import HomePage from '../HomePage/index';
+import HomePage from '../../../UnauthApp/components/HomePage/index';
+import UserRequests from '../UserRequests';
+import Statistics from '../Statistics';
 
 const AuthenticatedRoutes = () => (
   <Routes>
-    <Route path='/'>
+    <Route path='/home'>
       <Route index element={<HomePage />} />
     </Route>
     <Route path='/profile'>
@@ -33,19 +34,22 @@ const AuthenticatedRoutes = () => (
     <Route path='/properties/:id'>
       <Route index element={<EditProperty />} />
     </Route>
-    <Route path='/purchase-groups-feed'>
-      <Route index element={<PurchaseGroupsFeed />} />
+    <Route path='/requests'>
+      <Route index element={<UserRequests />} />
     </Route>
-    <Route path='/join-purchase-group'>
-      <Route index element={<JoinPurchaseGroupForm />} />
+    <Route path='/purchasing-groups'>
+      <Route index element={<PurchaseGroupsFeed />} />
     </Route>
     <Route path='/view-purchase-group'>
       <Route index element={<ViewPurchaseGroup />} />
     </Route>
-    <Route path="/info">
+    <Route path='/info'>
       <Route index element={<Info />} />
     </Route>
-    <Route path='*' element={<Navigate to='/' />} />
+    <Route path="/statistics">
+      <Route index element={<Statistics />} />
+    </Route>
+    <Route path='*' element={<Navigate to='/home' />} />
   </Routes>
 );
 

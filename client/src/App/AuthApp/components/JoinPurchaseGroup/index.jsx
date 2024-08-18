@@ -1,31 +1,28 @@
 import React, { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
-  Card,
-  CardContent,
   TextField,
   Button,
   Grid,
-  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useUser } from "../../contexts/UserContext";
 import { toast } from "react-toastify";
 import { useMutation } from "react-query";
 import { PurchaseGroupRequestSchema } from "./validationSchema";
 import { getClient } from "../../../../axios";
+import CloseIcon from "@mui/icons-material/Close";
 
-const JoinPurchaseGroupForm = () => {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const { user, setUser } = useUser();
-
+const JoinPurchaseGroupForm = ({ isOpen, group, onClose }) => {
   const {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(PurchaseGroupRequestSchema),
@@ -36,33 +33,29 @@ const JoinPurchaseGroupForm = () => {
   });
 
   useEffect(() => {
-    if (state?.group) {
-      setValue("group", state.group._id);
+    if (group) {
+      setValue("group", group._id);
     }
-  }, [state, setValue]);
+  }, [group, setValue]);
+
+  // Reset form fields when the dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      reset(); // This will clear the form when the dialog is closed
+    }
+  }, [isOpen, reset]);
 
   const { mutate: submitGroupRequest } = useMutation({
     mutationFn: async (data) => {
-      data["group"] = state.group._id;
+      data["group"] = group?._id;
       return await getClient().post(
         "api/purchaseGroups/purchaseGroupRequest",
         data
       );
     },
-    onSuccess: (response) => {
-      const newRequestId = response.data._id;
-      if (setUser) {
-        setUser((prevUser) => ({
-          ...prevUser,
-          purchaseGroupRequests: [
-            ...prevUser.purchaseGroupRequests,
-            newRequestId,
-          ],
-        }));
-      }
-
+    onSuccess: () => {
       toast.success("Group request submitted successfully!");
-      navigate("/purchase-groups-feed");
+      onClose();
     },
     onError: (error) => {
       toast.error(
@@ -77,23 +70,28 @@ const JoinPurchaseGroupForm = () => {
     submitGroupRequest(data);
   };
 
-  const groupName = state?.group?.name || "this group";
+  const groupName = group?.name || "this group";
 
   return (
-    <Card
-      sx={{
-        maxWidth: 400,
-        margin: "auto",
-        height: "100%",
-        overflow: "auto",
-        boxShadow: 4,
-      }}
-    >
-      <CardContent>
-        <Typography variant="h5" align="center" gutterBottom>
-          {`Join ${groupName} purchase group`}
-        </Typography>
-        <form onSubmit={handleSubmit(onSubmit)}>
+    <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>
+        {`Join ${groupName} Purchase Group`}
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent dividers>
           <input type="hidden" {...register("group")} />
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -126,20 +124,19 @@ const JoinPurchaseGroupForm = () => {
                 rows={4}
               />
             </Grid>
-            <Grid item xs={12} sx={{ textAlign: "center" }}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                sx={{ width: "80%", mt: 2, mb: 2, mx: "auto" }}
-              >
-                Submit
-              </Button>
-            </Grid>
           </Grid>
-        </form>
-      </CardContent>
-    </Card>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={onClose} color="secondary">
+            Cancel
+          </Button>
+          <Button type="submit" variant="contained" color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
   );
 };
 

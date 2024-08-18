@@ -1,13 +1,13 @@
-import { Container, Grid } from "@mui/material";
+import { Container, Grid } from '@mui/material';
 
-import AIQuestions from "./AIQuestions";
+import AIQuestions from './AIQuestions';
 
 const Info = () => {
   return (
-    <Container>
+    <Container maxWidth={false} sx={{ height: '100%' }}>
       <AIQuestions />
     </Container>
-  )
-}
+  );
+};
 
-export default Info
+export default Info;

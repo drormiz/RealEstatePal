@@ -10,18 +10,21 @@ import { UserModel } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 
-const findUserByUsername = async (username) =>
-  await UserModel.findOne({ username });
+const findUserByUsername = async (username) => await UserModel.findOne({ username });
 
 const findUserByEmail = async (email) => await UserModel.findOne({ email });
+
+const findUserByPhoneNumber = async (phoneNumber) => await UserModel.findOne({ phoneNumber });
 
 export const registerUser = async ({ body }, res, next) => {
   try {
     const user = await findUserByUsername(body.username);
     const email = await findUserByEmail(body.email);
+    const phoneNumber = await findUserByPhoneNumber(body.phoneNumber);
 
     if (!!user) throw createHttpError(406, "Username already in use");
     if (!!email) throw createHttpError(406, "Email already in use");
+    if (!!phoneNumber) throw createHttpError(406, "Phone number already in use");
 
     body.name = body.name
       .replace(/\s+/g, " ")

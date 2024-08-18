@@ -25,7 +25,7 @@ const LoginForm = () => {
             localStorage.setItem('user', JSON.stringify(user));
             localStorage.setItem('refreshToken', refreshToken)
             setUser(user);
-            navigate('/');
+            navigate('/home');
 
             toast.success('Logged In Successfully!');
         },
@@ -42,7 +42,7 @@ const LoginForm = () => {
             localStorage.setItem('refreshToken', res.refreshToken)
             localStorage.setItem('user', JSON.stringify(res.user));
             setUser(res.user);
-            navigate('/');
+            navigate('/home');
 
             toast.success('Logged In Successfully!');
         } catch (e) {
