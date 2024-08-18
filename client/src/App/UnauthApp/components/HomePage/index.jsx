@@ -8,21 +8,29 @@ import {
   Card,
   Grid,
   CardMedia,
-  CardContent
+  CardContent,
+  Button,
+  AppBar,
+  Toolbar
 } from '@mui/material';
-import PropertyCard from '../Properties/PropertyCard';
-import { getClient } from '../../../../axios';
+import PropertyCard from '../../../AuthApp/components/Properties/PropertyCard';
+import { getClient, getUnauthenticatedClient } from '../../../../axios';
 import HorizontalPanel from './horizontal-panel';
 import Banner from './banner';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../../../AuthApp/contexts/UserContext';
+
 const HomePage = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { user } = useUser();
 
   useEffect(() => {
     const fetchProperties = async () => {
       setLoading(true);
       try {
-        const properties = await getClient().get(`api/properties`);
+        const properties = await getUnauthenticatedClient().get(`api/properties`);
         setProperties(properties.data);
       } catch (error) {
         console.error('Error fetching properties and groups:', error);
@@ -36,6 +44,33 @@ const HomePage = () => {
 
   return (
     <>
+      {
+        !user &&
+        <AppBar position="static" sx={{ background: 'transparent', boxShadow: 'none' }}>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ marginRight: 2 }}
+            onClick={() => {
+              navigate('/login')
+            }}
+          >
+            Login
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => {
+              navigate('/register')
+            }}
+          >
+            Register
+          </Button>
+        </Toolbar>
+      </AppBar>
+      }
+      {/* Banner Section */}
       <Box
         sx={{
           position: 'relative',
@@ -100,6 +135,8 @@ const HomePage = () => {
           </Typography>
         </Box>
       </Box>
+
+      {/* Properties Section */}
       <Container
         maxWidth='lg'
         sx={{
@@ -141,6 +178,8 @@ const HomePage = () => {
           </HorizontalPanel>
         </Box>
       </Container>
+
+      {/* Banners Section */}
       <Container
         maxWidth='xl'
         sx={{

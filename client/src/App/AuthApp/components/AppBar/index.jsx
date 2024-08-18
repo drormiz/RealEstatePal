@@ -55,7 +55,7 @@ const AppBar = () => {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography
               component={Link}
-              to='/'
+              to='/home'
               sx={{
                 textTransform: 'none',
                 fontWeight: 'bold',

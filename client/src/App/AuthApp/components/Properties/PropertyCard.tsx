@@ -35,7 +35,7 @@ const PropertyCard = ({ property }) => {
     window.open(`mailto:${email}`, '_blank');
   };
 
-  const isUserOwner = user._id === property.owner?._id;
+  const isUserOwner = user?._id === property.owner?._id;
 
   return (
     <Card
@@ -104,7 +104,8 @@ const PropertyCard = ({ property }) => {
         </Typography>
       </CardContent>
 
-      <CardActions sx={{ justifyContent: 'space-between' }}>
+      {
+        user && <CardActions sx={{ justifyContent: 'space-between' }}>
         <Tooltip title='create purchase group'>
           <IconButton
             onClick={createPurchaseGroupFromProperty}
@@ -149,6 +150,7 @@ const PropertyCard = ({ property }) => {
           <ArrowForward />
         </IconButton>
       </CardActions>
+      }
     </Card>
   );
 };

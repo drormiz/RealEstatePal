@@ -7,13 +7,13 @@ import EditProperty from '../PropertyForm/EditProperty';
 import ViewPurchaseGroup from '../ViewPurchaseGroup/index';
 import Info from '../Info/index';
 import Properties from '../Properties';
-import HomePage from '../HomePage/index';
+import HomePage from '../../../UnauthApp/components/HomePage/index';
 import UserRequests from '../UserRequests';
 import Statistics from '../Statistics';
 
 const AuthenticatedRoutes = () => (
   <Routes>
-    <Route path='/'>
+    <Route path='/home'>
       <Route index element={<HomePage />} />
     </Route>
     <Route path='/profile'>
@@ -49,7 +49,7 @@ const AuthenticatedRoutes = () => (
     <Route path="/statistics">
       <Route index element={<Statistics />} />
     </Route>
-    <Route path='*' element={<Navigate to='/' />} />
+    <Route path='*' element={<Navigate to='/home' />} />
   </Routes>
 );
 

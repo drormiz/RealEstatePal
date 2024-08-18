@@ -40,7 +40,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
     latitude: property?.latitude || null,
     longitude: property?.longitude || null,
   });
-  const isPropertyOwnedUser = property?.owner._id === user._id;
+  const isPropertyOwnedUser = property?.owner._id === user?._id;
 
   useEffect(() => {
     if (property) {

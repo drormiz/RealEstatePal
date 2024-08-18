@@ -2,7 +2,7 @@ import { Column, Row } from "../../Layout";
 import AppBar from "./components/AppBar";
 import AuthenticatedRoutes from "./components/Routes";
 import { UserProvider } from "./contexts/UserContext";
-import Footer from "./components/HomePage/footer";
+import Footer from "../UnauthApp/components/HomePage/footer";
 
 const AuthenticatedApp = ({ user }) => (
   <UserProvider loggedUser={user}>

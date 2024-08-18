@@ -48,7 +48,7 @@ const UserMenu = () => {
     setUser(null);
     queryCache.clear();
 
-    navigate('/login');
+    navigate('/home');
     closeMenu();
   };
 
