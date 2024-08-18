@@ -7,8 +7,12 @@ import {
   TextField,
   InputAdornment,
   Skeleton,
-  Tooltip,
   Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Stack,
   Fab
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -17,20 +21,25 @@ import MapIcon from '@mui/icons-material/Map';
 import ListIcon from '@mui/icons-material/List';
 import { getClient } from '../../../../axios';
 import PropertyCard from './PropertyCard';
-import PropertyMap from './PropertyMap';
+import PropertyMap from './PropertyMap'; // Make sure to create this component
 
 const Properties = () => {
   const [propertiesToDisplay, setPropertiesToDisplay] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState('All');
   const [loading, setLoading] = useState(true);
-  const [mapView, setMapView] = useState(false);
+  const [mapView, setMapView] = useState(false); // State to track map view
 
   useEffect(() => {
     const fetchProperties = async () => {
       setLoading(true);
       try {
         const response = await getClient().get(
-          `api/properties${searchQuery ? `?name=${searchQuery}` : ''}`
+          `api/properties${searchQuery || selectedType !== 'All' ? '?' : ''}${
+            searchQuery ? `name=${searchQuery}` : ''
+          }${searchQuery && selectedType !== 'All' ? '&' : ''}${
+            selectedType !== 'All' ? `type=${selectedType}` : ''
+          }`
         );
         setPropertiesToDisplay(response.data);
       } catch (error) {
@@ -41,7 +50,11 @@ const Properties = () => {
     };
 
     fetchProperties();
-  }, [searchQuery]);
+  }, [searchQuery, selectedType]);
+
+  const handleTypeChange = event => {
+    setSelectedType(event.target.value);
+  };
 
   return (
     <Container>
@@ -63,11 +76,11 @@ const Properties = () => {
           Properties
         </Typography>
 
-        <Box
+        <Stack
+          direction={'row'}
           sx={{
-            flex: 1,
-            maxWidth: '600px',
-            marginLeft: '20px'
+            alignItems: 'center',
+            width: '70%'
           }}>
           <TextField
             variant='outlined'
@@ -83,6 +96,7 @@ const Properties = () => {
               )
             }}
             sx={{
+              flex: 5,
               backgroundColor: 'background.paper',
               borderRadius: '8px',
               '& .MuiOutlinedInput-root': {
@@ -100,25 +114,60 @@ const Properties = () => {
               '& .MuiInputBase-input': {
                 padding: '12px 14px',
                 fontSize: '1rem'
-              }
+              },
+              marginRight: '20px'
             }}
           />
-        </Box>
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={() => setMapView(prev => !prev)}
-          startIcon={mapView ? <ListIcon /> : <MapIcon />}
-          sx={{ marginLeft: '20px' }}>
-          {mapView ? 'List View' : 'Map View'}
-        </Button>
+
+          <FormControl
+            variant='outlined'
+            sx={{ minWidth: 200, marginRight: '20px', flex: 1 }}>
+            <InputLabel>Property Type</InputLabel>
+            <Select
+              value={selectedType}
+              onChange={handleTypeChange}
+              label='Property Type'
+              sx={{
+                backgroundColor: 'background.paper',
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px',
+                  '& fieldset': {
+                    borderColor: 'divider'
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main'
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'primary.main'
+                  }
+                }
+              }}>
+              <MenuItem value='All'>All</MenuItem>
+              <MenuItem value='Penthouse'>Penthouse</MenuItem>
+              <MenuItem value='Two floor'>Two floor</MenuItem>
+              <MenuItem value='Ground floor'>Ground floor</MenuItem>
+              <MenuItem value='Studio'>Studio</MenuItem>
+              <MenuItem value='Other'>Other</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Button
+            variant='contained'
+            color='primary'
+            sx={{ flex: 1 }}
+            onClick={() => setMapView(prev => !prev)}
+            startIcon={mapView ? <ListIcon /> : <MapIcon />}>
+            {mapView ? 'List View' : 'Map View'}
+          </Button>
+        </Stack>
       </Box>
 
       <Box
         sx={{
           overflowY: 'auto',
           maxHeight: '70vh',
-          marginTop: '20px'
+          marginTop: '20px',
+          minHeight: '300px'
         }}>
         {loading ? (
           <Grid container spacing={4}>
@@ -149,26 +198,14 @@ const Properties = () => {
         )}
       </Box>
 
-      <Tooltip title='Add Property' arrow>
+      <Box
+        sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
         <Fab
-          variant='contained'
           color='primary'
-          sx={{
-            position: 'fixed',
-            bottom: '100px', // Adjust this value according to your footer height
-            right: '20px',
-            backgroundColor: 'primary.main',
-            '&:hover': {
-              backgroundColor: 'primary.dark'
-            },
-            zIndex: 1000
-          }}
-          onClick={() => {
-            window.location.href = '/add-property';
-          }}>
+          onClick={() => (window.location.href = '/add-property')}>
           <AddIcon />
         </Fab>
-      </Tooltip>
+      </Box>
     </Container>
   );
 };
