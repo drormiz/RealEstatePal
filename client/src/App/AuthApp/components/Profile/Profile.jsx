@@ -183,7 +183,8 @@ const Profile = () => {
           alignItems: 'center',
           width: '100%',
           maxWidth: '300px',
-          margin: '0 auto'
+          margin: '0 auto',
+          maxHeight: '300px'
         }}>
         <Avatar
           alt={user.username}
