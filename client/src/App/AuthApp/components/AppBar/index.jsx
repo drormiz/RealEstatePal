@@ -24,7 +24,7 @@ const AppBar = () => {
         setValue("4");
         break;
       default:
-        setValue("1");
+        setValue("0");
     }
   }, [location.pathname]);
 

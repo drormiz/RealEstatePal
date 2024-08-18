@@ -40,7 +40,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
     latitude: property?.latitude || null,
     longitude: property?.longitude || null,
   });
-  const isPropertyOwnedUser = property?.owner === user._id;
+  const isPropertyOwnedUser = property?.owner._id === user._id;
 
   useEffect(() => {
     if (property) {
@@ -126,7 +126,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
           <Grid item xs={12} md={6}>
             <Stack spacing={3}>
               <TextField
-                disabled={property && !isPropertyOwnedUser}
+                disabled={(property && !isPropertyOwnedUser)}
                 {...register("name")}
                 label="Property Name"
                 variant="outlined"
