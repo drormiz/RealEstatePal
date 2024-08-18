@@ -64,7 +64,8 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
     navigate("/purchasing-groups");
   };
 
-  const isUpdateMode = !!state?.group;
+  const isUpdateMode = !!state?.group?._id;
+  const isPropertySelected = !!state?.group?.property;
 
   return (
     <Card
@@ -133,14 +134,14 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                 />
             </Grid>
             <Grid item xs={12}>
-              {isUpdateMode ? (
+              {isPropertySelected ? (
                 <TextField
                   fullWidth
                   label={
-                    isUpdateMode ? "Property - cannot be updated" : "Property"
+                    isPropertySelected ? "Property - cannot be updated" : "Property"
                   }
                   value={
-                    isUpdateMode
+                    isPropertySelected
                       ? properties.find(
                           (property) => property._id === state.group.property
                         )?.name || ""
@@ -149,10 +150,10 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                   InputLabelProps={{ shrink: true }}
                   placeholder="Property"
                   InputProps={{
-                    readOnly: isUpdateMode, 
+                    readOnly: isPropertySelected, 
                   }}
                   sx={{
-                    backgroundColor: isUpdateMode ? "#dddddd" : "inherit",
+                    backgroundColor: isPropertySelected ? "#dddddd" : "inherit",
                   }}
                 />
               ) : 
