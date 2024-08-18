@@ -65,7 +65,8 @@ const AIQuestions = () => {
             );
 
             const generatedAnswer = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, no answer was generated.';
-            setChatHistory([...chatHistory, userMessage, { text: generatedAnswer, isUser: false }]);
+            const answer = generatedAnswer.replaceAll('*', '\n');
+            setChatHistory([...chatHistory, userMessage, { text: answer, isUser: false }]);
         } catch (error) {
             console.error('Error fetching the answer:', error);
             setChatHistory([...chatHistory, userMessage, { text: 'Sorry, something went wrong.', isUser: false }]);

@@ -6,7 +6,7 @@ export const chatBox = theme => ({
   border: `1px solid ${theme.palette.divider}`,
   borderRadius: theme.shape.borderRadius,
   overflow: 'hidden',
-  backgroundColor: theme.palette.background.paper
+  backgroundColor: theme.palette.background.paper,
 });
 
 export const chipsContainer = theme => ({
@@ -33,7 +33,7 @@ export const messageContainer = isUser => ({
   color: isUser ? '#FFFFFF' : '#484848',
   borderRadius: '20px',
   padding: '10px 15px',
-  marginBottom: '10px',
+  marginBottom: isUser ? '10px' : '16px',
   boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
   maxWidth: '70%',
   alignSelf: isUser ? 'flex-end' : 'flex-start'

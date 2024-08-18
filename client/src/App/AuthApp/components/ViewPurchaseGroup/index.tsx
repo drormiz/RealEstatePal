@@ -14,6 +14,7 @@ import {
   ListItemText,
   Box,
   Tooltip,
+  Button,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
@@ -158,10 +159,10 @@ const ViewPurchaseGroup: React.FC = () => {
   const isCurrentUserOwner = group.owner._id === user._id;
   const userRequest = findUserRequest();
   const renderContactIcons = (phoneNumber?: string, email?: string) => (
-    <Grid container spacing={12} justifyContent="center">
-      {phoneNumber ? (
+    <>
+      {phoneNumber &&
         <>
-          <Grid item>
+          <Box>
             <Tooltip title="Contact via WhatsApp">
               <IconButton
                 color="primary"
@@ -170,38 +171,27 @@ const ViewPurchaseGroup: React.FC = () => {
                 <WhatsAppIcon />
               </IconButton>
             </Tooltip>
-          </Grid>
-          <Grid item>
-            <Tooltip title="Contact via Email">
-              <IconButton
-                color="primary"
-                onClick={() => email && handleEmailClick(email)}
-              >
-                <EmailIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-        </>
-      ) : (
-        <Grid item xs={12} style={{ textAlign: "center" }}>
-          <Tooltip title="Contact via Email">
+          </Box>
+        </>}
+      {email &&
+        <Box>
+          <Tooltip title={'Contact via Email'}>
             <IconButton
               color="primary"
-              onClick={() => email && handleEmailClick(email)}
-            >
+              onClick={() => email && handleEmailClick(email)}>
               <EmailIcon />
             </IconButton>
           </Tooltip>
-        </Grid>
-      )}
-    </Grid>
+        </Box>
+      }
+    </>
   );
 
   return (
-    <Stack direction={'row'} sx={{padding: '20px'}}>
-      {/* <IconButton sx={{alignSelf: 'start', margin: '5px 0px 0px 10px'}}>
+    <Stack direction={'row'} sx={{ padding: '20px' }}>
+      <IconButton sx={{ alignSelf: 'start', margin: '5px 0px 0px 10px' }}>
         <ArrowBackIcon onClick={() => navigate("/purchase-groups-feed")} />
-      </IconButton> */}
+      </IconButton>
       <Box >
         <CardContent>
           <Stack direction={'row'} spacing={2} sx={{ alignItems: 'center' }}>
@@ -249,10 +239,12 @@ const ViewPurchaseGroup: React.FC = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>
               <Card>
-                <CardContent>
-                  {renderProperty("Name", group.owner.name)}
-                  {renderProperty("Username", group.owner.username)}
-                  {renderProperty("Email", group.owner.email)}
+                <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box>
+                    {renderProperty("Name", group.owner.name)}
+                    {renderProperty("Username", group.owner.username)}
+                    {renderProperty("Email", group.owner.email)}
+                  </Box>
                   {!isCurrentUserOwner &&
                     renderContactIcons(
                       group.owner.phoneNumber,
@@ -284,7 +276,7 @@ const ViewPurchaseGroup: React.FC = () => {
           </Typography>
           <List>
             {group.members.map((member) => (
-              <ListItem key={member._id}>
+              <ListItem key={member._id} sx={{width: '50%'}}>
                 <ListItemAvatar>
                   <UserAvatar user={member} height={40} width={40} />
                 </ListItemAvatar>
@@ -292,9 +284,9 @@ const ViewPurchaseGroup: React.FC = () => {
                   primary={member.name}
                   secondary={member.email}
                 />
-                 {isCurrentUserOwner &&
-                      member._id !== group.owner._id &&
-                      renderContactIcons(member.phoneNumber, member.email)}
+                {isCurrentUserOwner &&
+                  member._id !== group.owner._id &&
+                  renderContactIcons(member.phoneNumber, member.email)}
               </ListItem>
             ))}
           </List>
@@ -336,7 +328,7 @@ const ViewPurchaseGroup: React.FC = () => {
                                 handleStatusChange(request._id, "approved")
                               }
                             >
-                              Approve
+                              {'Approve'}
                             </Button>
                           </Grid>
                           <Grid item>
@@ -347,7 +339,7 @@ const ViewPurchaseGroup: React.FC = () => {
                                 handleStatusChange(request._id, "rejected")
                               }
                             >
-                              Reject
+                              {'Reject'}
                             </Button>
                           </Grid>
                         </Grid>
