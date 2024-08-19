@@ -30,7 +30,14 @@ const populatePurchaseGroup = [
 const findPurchaseGroupById = (id) =>
   PurchaseGroupModel.findById(id).populate(populatePurchaseGroup);
 
-export const getPurchaseGroups = ({}, {}) => PurchaseGroupModel.find().populate('owner');
+export const getPurchaseGroups = async (req, res, next) => {
+  try {
+    const purchaseGroups = await PurchaseGroupModel.find({}).populate('owner').populate('purchaseGroupRequests');
+    return res.json(purchaseGroups);
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getPurchaseGroupById = async (req, res, next) => {
   const { id } = req.params;

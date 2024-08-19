@@ -9,6 +9,7 @@ import {
   IconButton,
   Box,
 } from "@mui/material";
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
@@ -33,19 +34,6 @@ const PurchaseGroupCard = ({group, handleOpenDeleteDialog, handleJoinGroup}) => 
     const { user } = useUser();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchPurchaseGroups = async () => {
-      try {
-        const response = await getClient().get("api/purchaseGroups");
-        setPurchaseGroups(response.data);
-      } catch (error) {
-        console.error("Error fetching purchase groups:", error);
-      }
-    };
-    fetchPurchaseGroups();
-  }, []);
-
-
   const handleEditGroup = (group) => {
     navigate("/add-purchase-group", { state: { group } });
   };
@@ -54,7 +42,9 @@ const PurchaseGroupCard = ({group, handleOpenDeleteDialog, handleJoinGroup}) => 
     return group.members.includes(user._id);
   };
 
-
+const isUserRequestedToThisGroup = (group) => {
+  return group.purchaseGroupRequests.some(x => x.user === user._id)
+}
 
     return (
         <>
@@ -68,7 +58,32 @@ const PurchaseGroupCard = ({group, handleOpenDeleteDialog, handleJoinGroup}) => 
                     flexDirection: "column",
                   }}
                 >
-                  {!isUserInGroup(group) && (
+                {isUserInGroup(group) ? (
+                    <IconButton
+                      color="primary"
+                      style={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        zIndex: 1,
+                      }}
+                      disabled
+                    >
+                      <CheckCircleIcon />
+                    </IconButton>
+                  ) :
+                  isUserRequestedToThisGroup(group) ? <IconButton
+                  color="primary"
+                  style={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    zIndex: 1,
+                  }}
+                  disabled
+                >
+                  <HourglassTopIcon />
+                </IconButton> : (
                     <>
                       <IconButton
                         onClick={() => handleJoinGroup(group)}
@@ -84,20 +99,7 @@ const PurchaseGroupCard = ({group, handleOpenDeleteDialog, handleJoinGroup}) => 
                       </IconButton>
                     </>
                   )}
-                  {isUserInGroup(group) && (
-                    <IconButton
-                      color="primary"
-                      style={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        zIndex: 1,
-                      }}
-                      disabled
-                    >
-                      <CheckCircleIcon />
-                    </IconButton>
-                  )}
+
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Grid sx={{display: 'flex', flexDirection: 'column'}}>
                     <Typography variant="h5" component="div" sx={{alignSelf: 'center'}} gutterBottom>
@@ -110,7 +112,7 @@ const PurchaseGroupCard = ({group, handleOpenDeleteDialog, handleJoinGroup}) => 
                         <Avatar
                             src={group.owner.image || ''}
                             sx={{
-                            bgcolor: !group.owner.image ? stringToColor(group.owner.name) : primary.main,
+                            bgcolor: !group.owner.image ? stringToColor(group.owner.name) : primary?.main,
                             width: 15,
                             height: 15,
                             ml: 0.5,

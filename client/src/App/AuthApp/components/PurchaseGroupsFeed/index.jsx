@@ -16,6 +16,7 @@ import {
   InputAdornment,
   Skeleton,
   Fab,
+  Stack,
   Tooltip
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -30,14 +31,18 @@ const PurchaseGroupsFeed = () => {
   const [currentGroup, setCurrentGroup] = useState(null);
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState(null); // Added to track the selected group for the dialog
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPurchaseGroups = async () => {
+      setLoading(true)
       try {
         const response = await getClient().get("api/purchaseGroups");
         setPurchaseGroups(response.data);
       } catch (error) {
         console.error("Error fetching purchase groups:", error);
+      } finally {
+        setLoading(false)
       }
     };
     fetchPurchaseGroups();
@@ -102,11 +107,11 @@ const PurchaseGroupsFeed = () => {
           Groups
         </Typography>
 
-        <Box
+        <Stack
+          direction={'row'}
           sx={{
-            flex: 1,
-            maxWidth: '600px',
-            marginLeft: '20px'
+            alignItems: 'center',
+            width: '70%'
           }}>
           <TextField
             label="Search Purchase Groups"
@@ -143,18 +148,34 @@ const PurchaseGroupsFeed = () => {
               }
             }}
           />
-        </Box>
+        </Stack>
       </Box>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={9}>
-          <Grid container spacing={3}>
-            {filteredGroups.map((group) => (
+      <Box
+        sx={{
+          overflowY: 'auto',
+          maxHeight: '70vh',
+          marginTop: '20px',
+          minHeight: '300px'
+        }}>
+
+          {
+            loading ? (
+              <Grid container spacing={4}>
+                {Array.from(new Array(6)).map((_, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <Skeleton width='60%' height={30} sx={{ marginTop: '10px' }} />
+                    <Skeleton width='80%' height={20} />
+                    <Skeleton width='40%' height={20} />
+                  </Grid>
+                ))}
+              </Grid>
+            ) : <Grid container spacing={4}>
+              {filteredGroups.map((group) => (
               <PurchaseGroupCard handleJoinGroup={handleJoinGroup} group={group} handleOpenDeleteDialog={handleOpenDeleteDialog}/>     
             ))}
-          </Grid>
-        </Grid>
-     
-      </Grid>
+            </Grid>
+          }
+     </Box>
 
       <JoinPurchaseGroupForm
         isOpen={isRequestDialogOpen}

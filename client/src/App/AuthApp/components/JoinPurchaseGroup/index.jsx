@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Typography,
 } from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
@@ -27,7 +28,7 @@ const JoinPurchaseGroupForm = ({ isOpen, group, onClose }) => {
   } = useForm({
     resolver: zodResolver(PurchaseGroupRequestSchema),
     defaultValues: {
-      priceToInvest: "",
+      priceToInvest: +group?.participationPrice,
       description: "",
     },
   });
@@ -95,7 +96,7 @@ const JoinPurchaseGroupForm = ({ isOpen, group, onClose }) => {
           <input type="hidden" {...register("group")} />
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField
+              {/* <TextField
                 fullWidth
                 label="Amount"
                 type="number"
@@ -107,15 +108,23 @@ const JoinPurchaseGroupForm = ({ isOpen, group, onClose }) => {
                   errors.priceToInvest ? errors.priceToInvest.message : ""
                 }
                 sx={{ mt: 2 }}
-              />
+              /> */}
+               <Typography
+                fullWidth
+                // {...register("priceToInvest", { valueAsNumber: true })}
+                InputLabelProps={{ shrink: true }}
+                placeholder="Investing Amount *"
+              >
+                Investing Amount: {group?.participationPrice}₪
+                </Typography>
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Description"
+                label="Description "
                 {...register("description")}
                 InputLabelProps={{ shrink: true }}
-                placeholder="Request Description *"
+                placeholder="why you want to join this group..."
                 error={!!errors.description}
                 helperText={
                   errors.description ? errors.description.message : ""
