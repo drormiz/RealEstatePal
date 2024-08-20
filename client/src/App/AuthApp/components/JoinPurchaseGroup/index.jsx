@@ -35,6 +35,7 @@ const JoinPurchaseGroupForm = ({ isOpen, group, onClose }) => {
   });
 
   useEffect(() => {
+    setValue("priceToInvest", +group?.participationPrice)
     if (group) {
       setValue("group", group._id);
     }
