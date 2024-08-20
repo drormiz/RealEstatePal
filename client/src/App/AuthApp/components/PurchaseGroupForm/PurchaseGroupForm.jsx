@@ -75,12 +75,10 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
         height: "100%",
         overflow: "auto",
         boxShadow: 4,
+        mt: 2
       }}
     >
       <CardContent>
-        <Typography variant="h5" align="center" gutterBottom>
-          {isUpdateMode ? "Update" : "Create"}
-        </Typography>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -89,17 +87,25 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                 label="Name"
                 {...register("name")}
                 InputLabelProps={{ shrink: true }}
-                placeholder="Name *"
                 required
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                fullWidth
+              variant="outlined"
+              multiline
+              rows={4}
+              fullWidth
+              InputProps={{
+                style: {
+                  // height: '150px', // Fixed height
+                  overflowY: 'auto', // Enable vertical scrolling
+                },
+              }}
                 label="Description"
                 {...register("description")}
                 InputLabelProps={{ shrink: true }}
-                placeholder="Description *"
+                // placeholder="Description *"
                 required
               />
             </Grid>
@@ -111,6 +117,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                   InputLabelProps={{ shrink: true }}
                   variant="outlined"
                   fullWidth
+                  required
                 />
             </Grid>
             <Grid item xs={12}>
@@ -121,6 +128,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                   InputLabelProps={{ shrink: true }}
                   variant="outlined"
                   fullWidth
+                  required
                 />
             </Grid>
             <Grid item xs={12}>
@@ -131,6 +139,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                   InputLabelProps={{ shrink: true }}
                   variant="outlined"
                   fullWidth
+                  required
                 />
             </Grid>
             <Grid item xs={12}>

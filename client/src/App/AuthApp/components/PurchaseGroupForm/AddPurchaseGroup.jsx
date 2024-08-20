@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getClient } from "../../../../axios";
 import PurchaseGroupForm from "./PurchaseGroupForm";
+import PurchaseGroupStepper from "./PurchaseGroupStepper";
 
 const AddPurchaseGroup = () => {
   const [properties, setProperties] = useState([]);
@@ -19,6 +20,8 @@ const AddPurchaseGroup = () => {
   }, []);
 
   const onSubmitHandler = async (newValue) => {
+    console.log("blablalbaalab " )
+    console.log(newValue)
     if (!newValue._id) {
       await getClient().post(`api/purchaseGroups`, newValue);
     } else {
@@ -27,10 +30,10 @@ const AddPurchaseGroup = () => {
   };
 
   return (
-    <PurchaseGroupForm
+    <PurchaseGroupStepper
       onSubmitHandler={onSubmitHandler}
       properties={properties}
-    ></PurchaseGroupForm>
+    ></PurchaseGroupStepper>
   );
 };
 
