@@ -116,7 +116,7 @@ const JoinPurchaseGroupForm = ({ isOpen, group, onClose }) => {
                 InputLabelProps={{ shrink: true }}
                 placeholder="Investing Amount *"
               >
-                Investing Amount: {group?.participationPrice}₪
+                Investing Amount: {group?.participationPrice}$
                 </Typography>
             </Grid>
             <Grid item xs={12}>

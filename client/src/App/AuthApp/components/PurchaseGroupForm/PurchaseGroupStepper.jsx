@@ -15,7 +15,8 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  Autocomplete
+  Autocomplete,
+  Typography
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import UpdateIcon from "@mui/icons-material/Update";
@@ -44,6 +45,9 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
     },
   });
 
+  const participationPrice = !!watch('participationPrice') ? watch('participationPrice') :
+            !!watch('maxMembersCount') ? properties.find(x => x._id === state.group.property).price/watch('maxMembersCount') : 0
+
   useEffect(() => {
     if (state?.group) {
       for (const [key, value] of Object.entries(state.group)) {
@@ -54,6 +58,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
 
   const onSubmit = async (data) => {
     console.log("Submitted data:", watch());
+    setValue("participationPrice", participationPrice)
     let currentId = id;
     if (state?.group) {
       currentId = state.group._id;
@@ -78,7 +83,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
     if (activeStep === 0) {
       return !watch("name") || !watch("description");
     } else if (activeStep === 1) {
-      return !watch("maxMembersCount") || !watch("participationPrice") || !watch("profitPercentage");
+      return !watch("maxMembersCount") || !watch("profitPercentage");
     } else if (activeStep === 2) {
       return !watch("property");
     }
@@ -132,23 +137,25 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                 <Grid item xs={12}>
                   <TextField
                     {...register("maxMembersCount")}
-                    label="Max Members Count"
+                    label="Members Count"
                     type="number"
                     InputLabelProps={{ shrink: true }}
                     variant="outlined"
                     fullWidth
+                    disabled={isUpdateMode}
                     required
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
                     {...register("participationPrice")}
-                    label="Participation Price"
+                    label={`Participation Price: propery price(${properties.find(x => x._id === state.group.property).price}$), divided by members count`}
                     type="number"
                     InputLabelProps={{ shrink: true }}
                     variant="outlined"
                     fullWidth
-                    required
+                    disabled={true}
+                    value={participationPrice}
                   />
                 </Grid>
                 <Grid item xs={12}>

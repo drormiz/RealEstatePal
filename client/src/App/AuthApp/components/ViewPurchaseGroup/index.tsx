@@ -228,7 +228,7 @@ const ViewPurchaseGroup: React.FC = () => {
               <CardContent>
                 {renderProperty("Description", group.description)}
                 {renderProperty("Max Members", group.maxMembersCount)}
-                {renderProperty("Participation Price", `₪${Number(group.participationPrice).toLocaleString()}`)}
+                {renderProperty("Participation Price", `$${Number(group.participationPrice).toLocaleString()}`)}
                 {renderProperty("Estimated Profit %", group.profitPercentage)}
               </CardContent>
             </Card>

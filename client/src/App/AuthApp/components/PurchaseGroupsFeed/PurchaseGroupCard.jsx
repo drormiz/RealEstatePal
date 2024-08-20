@@ -100,90 +100,86 @@ const PurchaseGroupCard = ({
             </>
           )}
 
-          <CardContent sx={{ flexGrow: 1 }}>
-            <Grid sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Typography
-                variant='h5'
-                component='div'
-                sx={{ alignSelf: 'center' }}
-                gutterBottom>
-                {group.name}
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography
-                  variant='h8'
-                  component='div'
-                  sx={{ alignSelf: 'center', mt: 0.3 }}
-                  gutterBottom>
-                  owner:
-                </Typography>
-                <Avatar
-                  src={group.owner.image || ''}
-                  sx={{
-                    bgcolor: !group.owner.image
-                      ? stringToColor(group.owner.name)
-                      : 'primary',
-                    width: 15,
-                    height: 15,
-                    ml: 0.5,
-                    mt: 0.4,
-                    mr: 0.3
-                  }}>
-                  {!group.owner.image && getInitials(group.owner.name)}
-                </Avatar>
-                {group.owner.name}
-              </Box>
-
-              <Typography variant='body2' color='textSecondary'>
-                description: {group.description}
-              </Typography>
-              <Typography variant='body2' color='textSecondary'>
-                Participation Price: {group.participationPrice}₪
-              </Typography>
-              <Typography variant='body2' color='textSecondary'>
-                {group.members?.length}/{group.maxMembersCount} members
-              </Typography>
-              <br />
-              <LinearProgress
-                variant='determinate'
-                value={(group.members?.length / group.maxMembersCount) * 100}
-              />
-              <Typography variant='body2' color='textSecondary'>
-                {group.members?.length * group.participationPrice}/
-                {group.maxMembersCount * group.participationPrice}₪ recruited
-              </Typography>
-            </Grid>
-          </CardContent>
-          {group.owner._id === user._id && (
-            <Box display='flex' justifyContent='space-between' px={2}>
-              <IconButton
-                onClick={() => handleOpenDeleteDialog(group)}
-                color='error'>
-                <DeleteIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => handleEditGroup(group)}
-                color='inherit'>
-                <EditIcon />
-              </IconButton>
-            </Box>
-          )}
-          <Box p={2}>
-            <Button
-              variant='contained'
-              color='primary'
-              fullWidth
-              onClick={() =>
-                navigate('/view-purchase-group', {
-                  state: { groupId: group._id }
-                })
-              }>
-              View Group
-            </Button>
-          </Box>
-        </Card>
-      </Grid>
-    </>
+  
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Grid sx={{display: 'flex', flexDirection: 'column'}}>
+                    <Typography variant="h5" component="div" sx={{alignSelf: 'center'}} gutterBottom>
+                      {group.name}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center'}}>
+                    <Typography variant="h8" component="div" sx={{alignSelf: 'center', mt: 0.3 }} gutterBottom>
+                    owner: 
+                    </Typography>
+                        <Avatar
+                            src={group.owner.image || ''}
+                            sx={{
+                            bgcolor: !group.owner.image ? stringToColor(group.owner.name) : primary?.main,
+                            width: 15,
+                            height: 15,
+                            ml: 0.5,
+                            mt: 0.4,
+                            mr: 0.3,
+                            }}>
+                            {!group.owner.image && getInitials(group.owner.name)}
+                        </Avatar>
+                        {group.owner.name}
+                    
+                    </Box>
+                    
+                    <Typography variant="body2" color="textSecondary">
+                    description: {group.description}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                    Participation Price: {group.participationPrice}$
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                    {group.members?.length}/{group.maxMembersCount} members
+                    </Typography>
+                    <br/>
+                    <LinearProgress variant="determinate" value={(group.members?.length/group.maxMembersCount)*100}/>
+                    <Typography variant="body2" color="textSecondary">
+                    {group.members?.length*group.participationPrice}/{group.maxMembersCount*group.participationPrice}$ recruited
+                    </Typography>
+                    </Grid>
+                    
+                  </CardContent>
+                  {group.owner._id === user._id && (
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      px={2}
+                    >
+                      <IconButton
+                        onClick={() => handleOpenDeleteDialog(group)}
+                        color="error"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => handleEditGroup(group)}
+                        color="inherit"
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Box>
+                  )}
+                  <Box p={2}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      fullWidth
+                      onClick={() =>
+                        navigate("/view-purchase-group", {
+                          state: { groupId: group._id },
+                        })
+                      }
+                    >
+                      View Group
+                    </Button>
+                  </Box>
+                </Card>
+              </Grid>
+              </>
   );
 };
 
