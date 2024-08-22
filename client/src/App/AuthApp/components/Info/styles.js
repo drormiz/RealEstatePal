@@ -25,7 +25,7 @@ export const chatContainer = theme => ({
   padding: theme.spacing(2),
   backgroundColor: theme.palette.background.default,
   borderTop: `1px solid ${theme.palette.divider}`,
-  maxHeight: '400px'
+  maxHeight: '490px'
 });
 
 export const messageContainer = isUser => ({

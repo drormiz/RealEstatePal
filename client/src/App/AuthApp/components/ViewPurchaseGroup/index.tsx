@@ -276,7 +276,7 @@ const ViewPurchaseGroup: React.FC = () => {
           </Typography>
           <List>
             {group.members.map((member) => (
-              <ListItem key={member._id} sx={{width: '50%'}}>
+              <ListItem key={member._id} sx={{ width: '50%' }}>
                 <ListItemAvatar>
                   <UserAvatar user={member} height={40} width={40} />
                 </ListItemAvatar>
@@ -295,59 +295,65 @@ const ViewPurchaseGroup: React.FC = () => {
               <Typography variant="h6" style={{ marginTop: "20px" }}>
                 {'Pending Requests'}
               </Typography>
-              <Grid container spacing={2}>
-                {pendingRequests.map((request) => (
-                  <Grid item xs={12} sm={6} md={4} key={request._id}>
-                    <Card>
-                      <CardContent>
-                        {renderProperty("Requested by", request.user.name)}
-                        {renderProperty("Username", request.user.username)}
-                        {renderProperty("Email", request.user.email)}
-                        {renderProperty(
-                          "Price to Invest",
-                          request.priceToInvest
-                        )}
-                        {renderProperty("Description", request.description)}
+              {
+                pendingRequests.length == 0
+                  ?
+                  <Typography>
+                    {'There are no pending requests right now.'}
+                  </Typography>
+                  : <Grid container spacing={2}>
+                    {pendingRequests.map((request) => (
+                      <Grid item xs={12} sm={6} md={4} key={request._id}>
+                        <Card>
+                          <CardContent>
+                            {renderProperty("Requested by", request.user.name)}
+                            {renderProperty("Username", request.user.username)}
+                            {renderProperty("Email", request.user.email)}
+                            {renderProperty(
+                              "Price to Invest",
+                              request.priceToInvest
+                            )}
+                            {renderProperty("Description", request.description)}
 
-                        {renderContactIcons(
-                          request.user.phoneNumber,
-                          request.user.email
-                        )}
-                        <Divider style={{ margin: "10px 0" }} />
-                        <Grid
-                          container
-                          spacing={6}
-                          justifyContent={"center"}
-                          style={{ top: "10px", position: "relative" }}
-                        >
-                          <Grid item>
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              onClick={() =>
-                                handleStatusChange(request._id, "approved")
-                              }
+                            {renderContactIcons(
+                              request.user.phoneNumber,
+                              request.user.email
+                            )}
+                            <Divider style={{ margin: "10px 0" }} />
+                            <Grid
+                              container
+                              spacing={6}
+                              justifyContent={"center"}
+                              style={{ top: "10px", position: "relative" }}
                             >
-                              {'Approve'}
-                            </Button>
-                          </Grid>
-                          <Grid item>
-                            <Button
-                              variant="contained"
-                              color="secondary"
-                              onClick={() =>
-                                handleStatusChange(request._id, "rejected")
-                              }
-                            >
-                              {'Reject'}
-                            </Button>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
+                              <Grid item>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  onClick={() =>
+                                    handleStatusChange(request._id, "approved")
+                                  }
+                                >
+                                  {'Approve'}
+                                </Button>
+                              </Grid>
+                              <Grid item>
+                                <Button
+                                  variant="contained"
+                                  color="secondary"
+                                  onClick={() =>
+                                    handleStatusChange(request._id, "rejected")
+                                  }
+                                >
+                                  {'Reject'}
+                                </Button>
+                              </Grid>
+                            </Grid>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>}
             </>
           )}
         </CardContent>
