@@ -186,7 +186,8 @@ const Statistics = () => {
               variant={activeChart === chartType ? "contained" : "outlined"}
               onClick={() => setActiveChart(chartType)}
             >
-              {chartType.split(/(?=[A-Z])/).join(" ")}
+              {chartType.split(/(?=[A-Z])/).join(" ").replace(/\b\w/g, char => char.toUpperCase())}
+
             </Button>
           </Grid>
         ))}
