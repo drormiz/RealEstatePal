@@ -26,6 +26,9 @@ const PurchaseGroupSchema = new Schema(
     profitPercentage: {
       type: String
     },
+    status: {
+      type: [String]
+    },
     purchaseGroupRequests: {
       type: [mongoose.Schema.Types.ObjectId],
       default: [],
