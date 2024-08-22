@@ -1,15 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import {
-  AppBar as MuiAppBar,
-  Typography,
-  Toolbar,
-  Box,
-  Button
-} from '@mui/material';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import UserMenu from './UserMenu';
+import { AppBar as MuiAppBar, Typography, Toolbar, Box, Tab } from '@mui/material';
 import { TabContext, TabList } from '@mui/lab';
-import Tab from '@mui/material/Tab';
+
+import UserMenu from './UserMenu';
 
 const AppBar = () => {
   const location = useLocation();
@@ -64,7 +58,7 @@ const AppBar = () => {
                 marginRight: 4,
                 textDecoration: 'none'
               }}>
-              RealEstatePal
+              {'RealEstatePal'}
             </Typography>
 
             <TabContext value={value}>

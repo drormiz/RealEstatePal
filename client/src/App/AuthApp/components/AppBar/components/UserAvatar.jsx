@@ -1,6 +1,5 @@
-import { Avatar } from '@mui/material';
+import { Avatar, useTheme } from '@mui/material';
 import stringToColor from 'string-to-color';
-import { useTheme } from '@mui/material';
 
 const getInitials = fullName =>
     fullName === ''

@@ -51,7 +51,7 @@ const AIQuestions = () => {
                         {
                             parts: [
                                 {
-                                    text: question,
+                                    text: `Answer or explain about the following question or term or terms in short: ${question}`,
                                 },
                             ],
                         },

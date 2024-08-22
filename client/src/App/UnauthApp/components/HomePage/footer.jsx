@@ -1,4 +1,4 @@
-import React from "react";
+
 import { Box, Container, Typography } from "@mui/material";
 
 const Footer = () => {
@@ -8,7 +8,7 @@ const Footer = () => {
         backgroundColor: "#2E2E2E",
         color: "#FFF",
         padding: "20px 0",
-        marginTop: 10,
+        marginTop: 5,
         position: "relative",
         bottom: 0,
         width: "100%",

@@ -62,6 +62,7 @@ export const prohibitedWords = [
 
 // List of real estate-related terms
 export const realEstateKeywords = [
+  'building',
   'real estate',
   'property',
   'house',
