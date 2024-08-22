@@ -125,7 +125,7 @@ const ViewPurchaseGroup: React.FC = () => {
   return (
     <Stack spacing={0} sx={{ padding: '20px', maxWidth: '100%' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-        <IconButton sx={{ marginRight: '10px' }} onClick={() => navigate("/purchase-groups-feed")}>
+        <IconButton sx={{ marginRight: '10px' }} onClick={() => navigate("/purchasing-groups")}>
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h4" gutterBottom>{group.name}</Typography>
