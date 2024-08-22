@@ -116,7 +116,7 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
       <Paper
         sx={{
           padding: "20px",
-          margin: "50px",
+          margin: "10px",
           borderRadius: "12px",
           backgroundColor: "#f9f9f9",
           overflow: "auto",
@@ -209,20 +209,6 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
                 error={!!errors.description}
                 helperText={errors.description ? "Description is required" : ""}
               />
-              <LocationPicker
-                setLocation={(location) => {
-                  setValue("latitude", location.latitude);
-                  setValue("longitude", location.longitude);
-                  setLocation(location);
-                }}
-                initialLocation={{
-                  latitude: property?.latitude || null,
-                  longitude: property?.longitude || null,
-                }}
-              />
-              {errors.latitude && (
-                <Typography color="error">{errors.latitude.message}</Typography>
-              )}
               <label style={{ fontSize: "large" }}>
                 <input
                   style={{ width: "20px", height: "20px" }}
@@ -236,6 +222,20 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Stack spacing={3}>
+            <LocationPicker
+                setLocation={(location) => {
+                  setValue("latitude", location.latitude);
+                  setValue("longitude", location.longitude);
+                  setLocation(location);
+                }}
+                initialLocation={{
+                  latitude: property?.latitude || null,
+                  longitude: property?.longitude || null,
+                }}
+              />
+              {errors.latitude && (
+                <Typography color="error">{errors.latitude.message}</Typography>
+              )}
               <Typography
                 sx={{ textDecoration: "underline" }}
                 variant="h4"
