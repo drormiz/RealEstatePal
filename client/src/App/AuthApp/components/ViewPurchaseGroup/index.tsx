@@ -97,6 +97,10 @@ const ViewPurchaseGroup: React.FC = () => {
 
   const handleStatusChange = async (requestId: string, status: string) => {
     try {
+      if (status === "approved" && group?.maxMembersCount == group?.members.length) {
+        toast.error("the group is full")
+        return;
+      }
       const response = await getClient().put(
         `api/purchaseGroups/changeRequestStatus/${requestId}`,
         { status }

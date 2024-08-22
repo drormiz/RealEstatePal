@@ -51,8 +51,10 @@ const PurchaseGroupCard = ({
     return group.purchaseGroupRequests.some(x => x.user === user._id);
   };
 
-  const isGroupFull = group => group.members.length === group.maxMembersCount
-
+  const isGroupFull = group => {
+    return group.members.length == group.maxMembersCount
+  }
+  
   return (
     <>
       <Grid item key={group._id} xs={12} sm={6} md={4}>
@@ -73,7 +75,7 @@ const PurchaseGroupCard = ({
                 zIndex: 1
               }}
               disabled>
-              <CheckCircleIcon />
+              <CheckCircleIcon sx={{color:"green"}}/>
             </IconButton>
           ) : isUserRequestedToThisGroup(group) ? (
             <IconButton
@@ -128,7 +130,7 @@ const PurchaseGroupCard = ({
                         <Avatar
                             src={group.owner.image || ''}
                             sx={{
-                            bgcolor: !group.owner.image ? stringToColor(group.owner.name) : primary?.main,
+                            bgcolor: !group.owner.image ? stringToColor(group.owner.name) : "",
                             width: 15,
                             height: 15,
                             ml: 0.5,
@@ -151,7 +153,9 @@ const PurchaseGroupCard = ({
                     {group.members?.length}/{group.maxMembersCount} members
                     </Typography>
                     <br/>
-                    <LinearProgress variant="determinate" value={(group.members?.length/group.maxMembersCount)*100}/>
+                    <LinearProgress variant="determinate" sx={{ '& .MuiLinearProgress-bar': {
+    backgroundColor: isGroupFull(group) && "green",
+  }}} value={(group.members?.length/group.maxMembersCount)*100}/>
                     <Typography variant="body2" color="textSecondary">
                     {group.members?.length*group.participationPrice}/{group.maxMembersCount*group.participationPrice}$ recruited
                     </Typography>
