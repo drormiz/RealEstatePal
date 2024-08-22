@@ -98,7 +98,7 @@ const ViewPurchaseGroup: React.FC = () => {
   const handleStatusChange = async (requestId: string, status: string) => {
     try {
       if (status === "approved" && group?.maxMembersCount == group?.members.length) {
-        toast.error("the group is full")
+        toast.error("the group is full");
         return;
       }
       const response = await getClient().put(
@@ -134,7 +134,7 @@ const ViewPurchaseGroup: React.FC = () => {
   };
 
   const renderProperty = (label: string, value: React.ReactNode) => (
-    <Typography variant="body2" color="textSecondary">
+    <Typography variant="body2" color="textSecondary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
       {label}:{" "}
       <Typography variant="body1" component="span" color="textPrimary">
         {value}
@@ -163,70 +163,61 @@ const ViewPurchaseGroup: React.FC = () => {
   const isCurrentUserOwner = group.owner._id === user._id;
   const userRequest = findUserRequest();
   const renderContactIcons = (phoneNumber?: string, email?: string) => (
-    <>
+    <Stack direction="row" spacing={1}>
       {phoneNumber &&
-        <>
-          <Box>
-            <Tooltip title="Contact via WhatsApp">
-              <IconButton
-                color="primary"
-                onClick={() => phoneNumber && handleWhatsAppClick(phoneNumber)}
-              >
-                <WhatsAppIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </>}
-      {email &&
-        <Box>
-          <Tooltip title={'Contact via Email'}>
-            <IconButton
-              color="primary"
-              onClick={() => email && handleEmailClick(email)}>
-              <EmailIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
+        <Tooltip title="Contact via WhatsApp">
+          <IconButton
+            color="primary"
+            onClick={() => handleWhatsAppClick(phoneNumber)}
+          >
+            <WhatsAppIcon />
+          </IconButton>
+        </Tooltip>
       }
-    </>
+      {email &&
+        <Tooltip title="Contact via Email">
+          <IconButton
+            color="primary"
+            onClick={() => handleEmailClick(email)}>
+            <EmailIcon />
+          </IconButton>
+        </Tooltip>
+      }
+    </Stack>
   );
 
   return (
-    <Stack direction={'row'} sx={{ padding: '20px' }}>
-      <IconButton sx={{ alignSelf: 'start', margin: '5px 0px 0px 10px' }}>
-        <ArrowBackIcon onClick={() => navigate("/purchase-groups-feed")} />
-      </IconButton>
-      <Box >
-        <CardContent>
-          <Stack direction={'row'} spacing={2} sx={{ alignItems: 'center' }}>
-            <Typography variant="h4" gutterBottom>
-              {group.name}
-            </Typography>
-            {userRequest && (
-              <Typography
-                variant={'body1'}
-                sx={{ color: userRequest.status === "pending" ? "orange" : "red" }}>
-                {userRequest.status === "pending" ? (
-                  <>
-                    <HourglassEmptyIcon
-                      sx={{ justifyContent: "middle", marginRight: "8px" }}
-                    />
-                    {'Your request is pending approval.'}
-                  </>
-                ) : userRequest.status === "rejected" ? (
-                  <>
-                    <HighlightOffIcon
-                      style={{ verticalAlign: "middle", marginRight: "8px" }}
-                    />
-                    {'Your request was rejected by the Admin of the group.'}
-                  </>
-                ) : null}
-              </Typography>
-            )}
-          </Stack>
-          <Typography variant="h6" gutterBottom marginTop={4}>
-            {'Group Details'}
-          </Typography>
+    <Stack direction="column" spacing={4} sx={{ padding: '20px', maxWidth: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <IconButton sx={{ marginRight: '10px' }} onClick={() => navigate("/purchase-groups-feed")}>
+          <ArrowBackIcon />
+        </IconButton>
+        <Typography variant="h4" gutterBottom>
+          {group.name}
+        </Typography>
+      </Box>
+
+      {userRequest && (
+        <Typography variant={'body1'} sx={{ color: userRequest.status === "pending" ? "orange" : "red" }}>
+          {userRequest.status === "pending" ? (
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <HourglassEmptyIcon />
+              {'Your request is pending approval.'}
+            </Stack>
+          ) : userRequest.status === "rejected" && (
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <HighlightOffIcon />
+              {'Your request was rejected by the Admin of the group.'}
+            </Stack>
+          )}
+        </Typography>
+      )}
+
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          {'Group Details'}
+        </Typography>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
             <Card>
               <CardContent>
@@ -237,134 +228,125 @@ const ViewPurchaseGroup: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Typography variant="h6" gutterBottom marginTop={4}>
-            {'Owner Details'}
+        </Grid>
+      </Box>
+
+      <Box>
+        <Typography variant="h6" gutterBottom>
+          {'Owner Details'}
+        </Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ marginBottom: '10px' }}>
+                  {renderProperty("Name", group.owner.name)}
+                  {renderProperty("Username", group.owner.username)}
+                  {renderProperty("Email", group.owner.email)}
+                </Box>
+                {!isCurrentUserOwner &&
+                  <Box sx={{ alignSelf: 'flex-end' }}>
+                    {renderContactIcons(group.owner.phoneNumber, group.owner.email)}
+                  </Box>}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {group.property && (
+        <Box>
+          <Typography variant="h6" gutterBottom>
+            {'Property Details'}
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>
               <Card>
-                <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <Box>
-                    {renderProperty("Name", group.owner.name)}
-                    {renderProperty("Username", group.owner.username)}
-                    {renderProperty("Email", group.owner.email)}
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    {!isCurrentUserOwner &&
-                      renderContactIcons(
-                        group.owner.phoneNumber,
-                        group.owner.email
-                      )}
-                  </Box>
+                <CardContent>
+                  {renderProperty("Name", group.property.name)}
+                  {renderProperty("Description", group.property.description)}
+                  {renderProperty("Email", group.owner.email)}
                 </CardContent>
               </Card>
             </Grid>
           </Grid>
-          {group.property && (
-            <>
-              <Typography variant="h6" gutterBottom marginTop={4}>
-                {'Property Details'}
-              </Typography>
-              <Grid item xs={12} sm={6} md={4} sx={{ marginBottom: '10px' }}>
-                <Card>
-                  <CardContent>
-                    {renderProperty("Name", group.property.name)}
-                    {renderProperty("Description", group.property.description)}
-                    {renderProperty("Email", group.owner.email)}
-                  </CardContent>
-                </Card>
-              </Grid>
-              <PurchaseGroupImages images={group.property.images} />
-            </>
-          )}
-          <Typography variant="h6" paddingTop={5}>
-            {'Members'}
-          </Typography>
-          <List>
-            {group.members.map((member) => (
-              <ListItem key={member._id} sx={{ width: '50%' }}>
-                <ListItemAvatar>
-                  <UserAvatar user={member} height={40} width={40} />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={member.name}
-                  secondary={member.email}
-                />
-                {isCurrentUserOwner &&
-                  member._id !== group.owner._id &&
-                  renderContactIcons(member.phoneNumber, member.email)}
-              </ListItem>
-            ))}
-          </List>
-          {isCurrentUserOwner && (
-            <>
-              <Typography variant="h6" style={{ marginTop: "20px" }}>
-                {'Pending Requests'}
-              </Typography>
-              {
-                pendingRequests.length == 0
-                  ?
-                  <Typography>
-                    {'There are no pending requests right now.'}
-                  </Typography>
-                  : <Grid container spacing={2}>
-                    {pendingRequests.map((request) => (
-                      <Grid item xs={12} sm={6} md={4} key={request._id}>
-                        <Card>
-                          <CardContent>
-                            {renderProperty("Requested by", request.user.name)}
-                            {renderProperty("Username", request.user.username)}
-                            {renderProperty("Email", request.user.email)}
-                            {renderProperty(
-                              "Price to Invest",
-                              request.priceToInvest
-                            )}
-                            {renderProperty("Description", request.description)}
-                            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                              {renderContactIcons(
-                                request.user.phoneNumber,
-                                request.user.email
-                              )}
-                            </Box>
-                            <Divider style={{ margin: "10px 0" }} />
-                            <Grid
-                              container
-                              spacing={6}
-                              justifyContent={"center"}
-                              style={{ top: "10px", position: "relative" }}
-                            >
-                              <Grid item>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  onClick={() =>
-                                    handleStatusChange(request._id, "approved")
-                                  }
-                                >
-                                  {'Approve'}
-                                </Button>
-                              </Grid>
-                              <Grid item>
-                                <Button
-                                  variant="contained"
-                                  color="secondary"
-                                  onClick={() =>
-                                    handleStatusChange(request._id, "rejected")
-                                  }
-                                >
-                                  {'Reject'}
-                                </Button>
-                              </Grid>
-                            </Grid>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>}
-            </>
-          )}
-        </CardContent>
+          <PurchaseGroupImages images={group.property.images} />
+        </Box>
+      )}
+
+      <Box>
+        <Typography variant="h6">
+          {'Members'}
+        </Typography>
+        <List>
+          {group.members.map((member) => (
+            <ListItem key={member._id} sx={{ width: '100%' }}>
+              <ListItemAvatar>
+                <UserAvatar user={member} height={40} width={40} />
+              </ListItemAvatar>
+              <ListItemText
+                primary={member.name}
+                secondary={member.email}
+              />
+              {isCurrentUserOwner && member._id !== group.owner._id &&
+                renderContactIcons(member.phoneNumber, member.email)}
+            </ListItem>
+          ))}
+        </List>
       </Box>
+
+      {isCurrentUserOwner && (
+        <Box>
+          <Typography variant="h6" style={{ marginTop: "20px" }}>
+            {'Pending Requests'}
+          </Typography>
+          {pendingRequests.length === 0 ? (
+            <Typography>
+              {'There are no pending requests right now.'}
+            </Typography>
+          ) : (
+            <Grid container spacing={2}>
+              {pendingRequests.map((request) => (
+                <Grid item xs={12} sm={6} md={4} key={request._id}>
+                  <Card>
+                    <CardContent>
+                      {renderProperty("Requested by", request.user.name)}
+                      {renderProperty("Username", request.user.username)}
+                      {renderProperty("Email", request.user.email)}
+                      {renderProperty("Price to Invest", request.priceToInvest)}
+                      {renderProperty("Description", request.description)}
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        {renderContactIcons(request.user.phoneNumber, request.user.email)}
+                      </Box>
+                      <Divider style={{ margin: "10px 0" }} />
+                      <Grid container spacing={2} justifyContent="center">
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleStatusChange(request._id, "approved")}
+                          >
+                            {'Approve'}
+                          </Button>
+                        </Grid>
+                        <Grid item>
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => handleStatusChange(request._id, "rejected")}
+                          >
+                            {'Reject'}
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Box>
+      )}
     </Stack>
   );
 };
