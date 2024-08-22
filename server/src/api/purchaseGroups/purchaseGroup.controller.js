@@ -112,7 +112,7 @@ export const addStatusToPurchaseGroup = async (req, res) => {
 
     purchaseGroup.statuses.push(newStatus)
 
-    awaitpurchaseGroup.save()
+    await purchaseGroup.save()
 
 
     res.status(200).json(purchaseGroup);

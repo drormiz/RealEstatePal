@@ -16,6 +16,9 @@ import {
   Tooltip,
   Button,
   Divider,
+  CardContent,
+  Card,
+  Paper,
 } from "@mui/material";
 import {
   CheckCircleOutline as CheckCircleOutlineIcon,
@@ -32,45 +35,11 @@ import { getClient } from "../../../../axios";
 import { useUser } from "../../contexts/UserContext";
 import PurchaseGroupImages from "./Components/PurchaseGroupImages";
 import UserAvatar from "../AppBar/components/UserAvatar";
-
-interface PurchaseGroup {
-  _id: string;
-  name: string;
-  description: string;
-  members: User[];
-  maxMembersCount: number;
-  participationPrice: number;
-  profitPercentage: number;
-  purchaseGroupRequests: PurchaseGroupRequest[];
-  owner: User;
-  property: Property;
-}
-
-interface Property {
-  _id: string;
-  name: string;
-  description: string;
-  images: string[];
-}
-
-interface User {
-  _id: string;
-  name: string;
-  username: string;
-  email: string;
-  phoneNumber?: string;
-}
-
-interface PurchaseGroupRequest {
-  _id: string;
-  priceToInvest: number;
-  description: string;
-  status: string;
-  user: User;
-}
+import ChatBox from "./Components/Chatbox";
 
 const ViewPurchaseGroup: React.FC = () => {
   const [group, setGroup] = useState<PurchaseGroup | null>(null);
+  const [statuses, setStatuses] = useState<string[]>([]); // State for chat statuses
   const location = useLocation();
   const { user } = useUser();
   const navigate = useNavigate();
@@ -81,6 +50,7 @@ const ViewPurchaseGroup: React.FC = () => {
       try {
         const response = await getClient().get(`api/purchaseGroups/${groupId}`);
         setGroup(response.data);
+        setStatuses(response.data.statuses || []); // Initialize statuses
       } catch (error) {
         console.error("Error fetching purchase group details:", error);
       }
@@ -116,6 +86,27 @@ const ViewPurchaseGroup: React.FC = () => {
   const handleEmailClick = (email: string) => window.open(`mailto:${email}`, "_blank");
   const handleWhatsAppClick = (phone: string) => window.open(`https://wa.me/${phone}`, "_blank");
 
+  const handleSendStatus = async (newStatus: string) => {
+    if (newStatus === "") return;
+
+    try {
+      const response = await getClient().put(
+        `api/purchaseGroups/addStatus/${group!._id}`,
+        { newStatus }
+      );
+      if (response.status === 200) {
+        setGroup(response.data);
+        setStatuses(response.data.statuses); // Update statuses
+        toast.success("Status added successfully!");
+      } else {
+        toast.error("Failed to add status.");
+      }
+    } catch (error) {
+      console.error("Error adding status:", error);
+      toast.error("Error adding status.");
+    }
+  };
+
   const renderProperty = (label: string, value: React.ReactNode) => (
     <Typography variant="body2" color="textSecondary" sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
       {label}:{" "}
@@ -125,15 +116,15 @@ const ViewPurchaseGroup: React.FC = () => {
     </Typography>
   );
 
-  if (!group) return <Typography variant="h6">{'Loading...'}</Typography>;
+  if (!group) return <Typography variant="h6">Loading...</Typography>;
 
   const isCurrentUserOwner = group.owner._id === user._id;
   const pendingRequests = group.purchaseGroupRequests.filter(request => request.status === "pending");
   const userRequest = group.purchaseGroupRequests.find(request => request.user._id === user._id);
 
   return (
-    <Stack spacing={4} sx={{ padding: '20px', maxWidth: '100%' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Stack spacing={0} sx={{ padding: '20px', maxWidth: '100%' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
         <IconButton sx={{ marginRight: '10px' }} onClick={() => navigate("/purchase-groups-feed")}>
           <ArrowBackIcon />
         </IconButton>
@@ -141,7 +132,7 @@ const ViewPurchaseGroup: React.FC = () => {
       </Box>
 
       {userRequest && (
-        <Typography variant="body1" sx={{ color: userRequest.status === "pending" ? "orange" : "red" }}>
+        <Typography variant="body1" sx={{ color: userRequest.status === "pending" ? "orange" : "red", marginBottom: '10px' }}>
           <Stack direction="row" alignItems="center" spacing={1}>
             {userRequest.status === "pending" && <HourglassEmptyIcon />}
             {userRequest.status === "rejected" && <HighlightOffIcon />}
@@ -150,7 +141,7 @@ const ViewPurchaseGroup: React.FC = () => {
         </Typography>
       )}
 
-      <Accordion>
+      <Accordion sx={{ margin: 0, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography variant="h6">{'Group Details'}</Typography>
         </AccordionSummary>
@@ -162,7 +153,7 @@ const ViewPurchaseGroup: React.FC = () => {
         </AccordionDetails>
       </Accordion>
 
-      <Accordion>
+      <Accordion sx={{ margin: 0, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography variant="h6">{'Owner Details'}</Typography>
         </AccordionSummary>
@@ -191,8 +182,17 @@ const ViewPurchaseGroup: React.FC = () => {
         </AccordionDetails>
       </Accordion>
 
+      <Accordion sx={{ margin: 0, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">{'Statuses chat'}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <ChatBox statuses={statuses} handleSendMessage={handleSendStatus} isOwner={isCurrentUserOwner}/>
+        </AccordionDetails>
+      </Accordion>
+
       {group.property && (
-        <Accordion>
+        <Accordion sx={{ margin: 0, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6">{'Property Details'}</Typography>
           </AccordionSummary>
@@ -204,7 +204,7 @@ const ViewPurchaseGroup: React.FC = () => {
         </Accordion>
       )}
 
-      <Accordion>
+      <Accordion sx={{ margin: 0, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography variant="h6">{'Members'}</Typography>
         </AccordionSummary>
@@ -239,7 +239,7 @@ const ViewPurchaseGroup: React.FC = () => {
       </Accordion>
 
       {isCurrentUserOwner && (
-        <Accordion>
+        <Accordion sx={{ margin: 0, borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6">{'Pending Requests'}</Typography>
           </AccordionSummary>
