@@ -239,17 +239,19 @@ const ViewPurchaseGroup: React.FC = () => {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>
               <Card>
-                <CardContent sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <CardContent sx={{ display: 'flex', flexDirection: 'column' }}>
                   <Box>
                     {renderProperty("Name", group.owner.name)}
                     {renderProperty("Username", group.owner.username)}
                     {renderProperty("Email", group.owner.email)}
                   </Box>
-                  {!isCurrentUserOwner &&
-                    renderContactIcons(
-                      group.owner.phoneNumber,
-                      group.owner.email
-                    )}
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    {!isCurrentUserOwner &&
+                      renderContactIcons(
+                        group.owner.phoneNumber,
+                        group.owner.email
+                      )}
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
@@ -314,11 +316,12 @@ const ViewPurchaseGroup: React.FC = () => {
                               request.priceToInvest
                             )}
                             {renderProperty("Description", request.description)}
-
-                            {renderContactIcons(
-                              request.user.phoneNumber,
-                              request.user.email
-                            )}
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                              {renderContactIcons(
+                                request.user.phoneNumber,
+                                request.user.email
+                              )}
+                            </Box>
                             <Divider style={{ margin: "10px 0" }} />
                             <Grid
                               container
