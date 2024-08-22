@@ -13,6 +13,7 @@ import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
@@ -50,6 +51,8 @@ const PurchaseGroupCard = ({
     return group.purchaseGroupRequests.some(x => x.user === user._id);
   };
 
+  const isGroupFull = group => group.members.length === group.maxMembersCount
+
   return (
     <>
       <Grid item key={group._id} xs={12} sm={6} md={4}>
@@ -83,6 +86,18 @@ const PurchaseGroupCard = ({
               }}
               disabled>
               <HourglassTopIcon />
+            </IconButton>
+          ) : isGroupFull(group) ? (
+            <IconButton
+              color='primary'
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                zIndex: 1
+              }}
+              disabled>
+              <LockIcon />
             </IconButton>
           ) : (
             <>
