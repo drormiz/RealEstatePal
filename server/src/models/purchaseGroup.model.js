@@ -26,7 +26,7 @@ const PurchaseGroupSchema = new Schema(
     profitPercentage: {
       type: String
     },
-    status: {
+    statuses: {
       type: [String]
     },
     purchaseGroupRequests: {

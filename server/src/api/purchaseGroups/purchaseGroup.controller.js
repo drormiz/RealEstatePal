@@ -99,6 +99,29 @@ export const updatePurchaseGroup = async (req, res) => {
   }
 };
 
+export const addStatusToPurchaseGroup = async (req, res) => {
+  const purchaseGroupId = req.params.id;
+  const { newStatus } = req.body;
+
+  try {
+    const purchaseGroup = await findPurchaseGroupById(purchaseGroupId);
+    
+    if (!purchaseGroup) {
+      return res.status(404).json({ error: 'PurchaseGroup not found' });
+    }
+
+    purchaseGroup.statuses.push(newStatus)
+
+    awaitpurchaseGroup.save()
+
+
+    res.status(200).json(purchaseGroup);
+  } catch (error) {
+    console.error('Error updating purchaseGroup:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
 export const deletePurchaseGroup = async (req, res) => {
   const purchaseGroupId = req.params.id;
 

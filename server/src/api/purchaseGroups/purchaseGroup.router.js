@@ -9,7 +9,8 @@ import {
   getPurchaseGroupRequests,
   deletePurchaseGroupRequest,
   updatePurchaseGroupRequest,
-  changeRequestStatus
+  changeRequestStatus,
+  addStatusToPurchaseGroup
 } from "./purchaseGroup.controller.js";
 import { protect } from "../../middlewares/auth.middleware.js";
 
@@ -25,6 +26,7 @@ router.get("/:id", getPurchaseGroupById);
 router.post("/", protect, createPurchaseGroup);
 router.put("/:id", protect, updatePurchaseGroup);
 router.delete("/:id", protect, deletePurchaseGroup);
+router.put("/addStatus/:id", addStatusToPurchaseGroup);
 
 router.put("/changeRequestStatus/:id", protect, changeRequestStatus);
 
