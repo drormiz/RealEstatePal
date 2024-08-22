@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUser } from "../../../../Providers/UserProvider";
@@ -113,6 +114,11 @@ const PropertyBaseForm = ({ property = null, onSubmitHandler }) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ width: "100%" }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+        <IconButton sx={{ marginRight: '10px' }} onClick={() => navigate("/properties")}>
+          <ArrowBack />
+        </IconButton>
+      </Box>
       <Paper
         sx={{
           padding: "20px",
