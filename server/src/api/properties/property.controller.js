@@ -2,11 +2,9 @@ import { PropertyModel } from '../../models/property.model.js';
 
 export const getProperties = async (req, res, next) => {
   try {
-    const { name, type } = req.query; // Get type from query params
-
+    const { name, type, page = 1, limit = 10 } = req.query;
     let filter = {};
 
-    // Apply name filter if provided
     if (name) {
       filter.name = { $regex: new RegExp(name, 'i') };
     }
@@ -15,16 +13,25 @@ export const getProperties = async (req, res, next) => {
       filter.propertyType = type;
     }
 
-    console.log(filter);
+    const skip = (page - 1) * limit;
 
-    const properties = await PropertyModel.find({ ...filter }).populate({
-      path: 'owner',
-      select: '_id username name image phoneNumber email'
+    const properties = await PropertyModel.find(filter)
+      .populate({
+        path: 'owner',
+        select: '_id username name image phoneNumber email'
+      })
+      .skip(skip)
+      .limit(Number(limit));
+
+    const totalProperties = await PropertyModel.countDocuments(filter);
+    const totalPages = Math.ceil(totalProperties / limit);
+
+    return res.status(200).json({
+      properties,
+      totalPages,
+      currentPage: Number(page),
+      totalProperties
     });
-
-    console.log(properties);
-
-    return res.status(200).json(properties);
   } catch (error) {
     next(error);
   }

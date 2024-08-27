@@ -1,74 +1,91 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  Card,
-  CardContent,
   Typography,
   Container,
   TextField,
-  Button,
-  Grid,
+  Box,
+  InputAdornment,
+  Skeleton,
+  Stack,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
-  Box,
-  InputAdornment,
-  Skeleton,
-  Fab,
-  Stack,
-  Tooltip
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import { getClient } from "../../../../axios";
-import JoinPurchaseGroupForm from "../JoinPurchaseGroup";
-import PurchaseGroupCard from "./PurchaseGroupCard";
+  Button
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import { getClient } from '../../../../axios';
+import JoinPurchaseGroupForm from '../JoinPurchaseGroup';
+import PurchaseGroupCard from './PurchaseGroupCard';
 
 const PurchaseGroupsFeed = () => {
   const [purchaseGroups, setPurchaseGroups] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentGroup, setCurrentGroup] = useState(null);
   const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
-  const [selectedGroup, setSelectedGroup] = useState(null); // Added to track the selected group for the dialog
-  const [loading, setLoading] = useState(true);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+
+  // Ref for the intersection observer
+  const observer = useRef();
+
+  const lastGroupElementRef = useCallback(
+    node => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage(prevPage => prevPage + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
   useEffect(() => {
     const fetchPurchaseGroups = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await getClient().get("api/purchaseGroups");
-        setPurchaseGroups(response.data);
+        const response = await getClient().get(
+          `api/purchaseGroups?page=${page}&limit=6&searchTerm=${searchTerm}`
+        );
+        setPurchaseGroups(prevGroups => [
+          ...prevGroups,
+          ...response.data.groups
+        ]);
+        setHasMore(response.data.groups.length > 0);
       } catch (error) {
-        console.error("Error fetching purchase groups:", error);
+        console.error('Error fetching purchase groups:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
     fetchPurchaseGroups();
-  }, []);
+  }, [page, searchTerm]);
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = event => {
     setSearchTerm(event.target.value);
+    setPage(1);
+    setPurchaseGroups([]);
   };
 
-  const filteredGroups = purchaseGroups.filter((group) =>
-    group.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleDeleteGroup = async (groupId) => {
+  const handleDeleteGroup = async groupId => {
     try {
       await getClient().delete(`api/purchaseGroups/${groupId}`);
-      setPurchaseGroups((prevGroups) =>
-        prevGroups.filter((group) => group._id !== groupId)
+      setPurchaseGroups(prevGroups =>
+        prevGroups.filter(group => group._id !== groupId)
       );
     } catch (error) {
-      console.error("Error deleting purchase group:", error);
+      console.error('Error deleting purchase group:', error);
     }
     setOpenDeleteDialog(false);
   };
 
-  const handleOpenDeleteDialog = (group) => {
+  const handleOpenDeleteDialog = group => {
     setCurrentGroup(group);
     setOpenDeleteDialog(true);
   };
@@ -79,16 +96,16 @@ const PurchaseGroupsFeed = () => {
 
   const handleCloseJoinDialog = () => {
     setIsRequestDialogOpen(false);
-    setSelectedGroup(null); // Clear the selected group
+    setSelectedGroup(null);
   };
 
-  const handleJoinGroup = (group) => {
-    setSelectedGroup(group); // Set the selected group
-    setIsRequestDialogOpen(true); // Open the dialog
+  const handleJoinGroup = group => {
+    setSelectedGroup(group);
+    setIsRequestDialogOpen(true);
   };
 
   return (
-    <Container >
+    <Container>
       <Box
         sx={{
           display: 'flex',
@@ -114,12 +131,11 @@ const PurchaseGroupsFeed = () => {
             width: '70%'
           }}>
           <TextField
-            label="Search Purchase Groups"
-            variant="outlined"
+            label='Search Purchase Groups'
+            variant='outlined'
             fullWidth
             value={searchTerm}
             onChange={handleSearchChange}
-
             InputProps={{
               startAdornment: (
                 <InputAdornment position='start'>
@@ -150,32 +166,61 @@ const PurchaseGroupsFeed = () => {
           />
         </Stack>
       </Box>
+
       <Box
         sx={{
           overflowY: 'auto',
           maxHeight: '70vh',
-          marginTop: '20px',
-          minHeight: '300px'
+          marginTop: '20px'
         }}>
-
-          {
-            loading ? (
-              <Grid container spacing={4}>
-                {Array.from(new Array(6)).map((_, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
-                    <Skeleton width='60%' height={30} sx={{ marginTop: '10px' }} />
-                    <Skeleton width='80%' height={20} />
-                    <Skeleton width='40%' height={20} />
-                  </Grid>
-                ))}
-              </Grid>
-            ) : <Grid container spacing={4}>
-              {filteredGroups.map((group) => (
-              <PurchaseGroupCard handleJoinGroup={handleJoinGroup} group={group} handleOpenDeleteDialog={handleOpenDeleteDialog}/>     
-            ))}
-            </Grid>
-          }
-     </Box>
+        <Stack spacing={4}>
+          {loading && page === 1 ? (
+            Array.from(new Array(6)).map((_, index) => (
+              <Box key={index} sx={{ width: '100%' }}>
+                <Skeleton variant='rectangular' width='100%' height={200} />
+              </Box>
+            ))
+          ) : (
+            <>
+              {purchaseGroups.length > 0 && (
+                <Stack spacing={4}>
+                  {purchaseGroups
+                    .reduce((rows, group, index) => {
+                      if (index % 3 === 0) rows.push([]);
+                      rows[rows.length - 1].push(group);
+                      return rows;
+                    }, [])
+                    .map((row, rowIndex) => (
+                      <Stack
+                        key={rowIndex}
+                        direction='row'
+                        spacing={4}
+                        sx={{ width: '100%' }}>
+                        {row.map((group, groupIndex) => {
+                          const isLastElement =
+                            purchaseGroups.length ===
+                            rowIndex * 3 + groupIndex + 1;
+                          return (
+                            <Box
+                              key={group._id}
+                              ref={isLastElement ? lastGroupElementRef : null}
+                              sx={{ flex: 1, maxWidth: '300px' }}>
+                              <PurchaseGroupCard
+                                handleJoinGroup={handleJoinGroup}
+                                group={group}
+                                handleOpenDeleteDialog={handleOpenDeleteDialog}
+                              />
+                            </Box>
+                          );
+                        })}
+                      </Stack>
+                    ))}
+                </Stack>
+              )}
+            </>
+          )}
+        </Stack>
+      </Box>
 
       <JoinPurchaseGroupForm
         isOpen={isRequestDialogOpen}
@@ -186,18 +231,17 @@ const PurchaseGroupsFeed = () => {
       <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
         <DialogTitle>Delete Confirmation</DialogTitle>
         <DialogContent>
-          <Typography variant="body1">
+          <Typography variant='body1'>
             Are you sure you want to delete this group?
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="primary">
+          <Button onClick={handleCloseDeleteDialog} color='primary'>
             Cancel
           </Button>
           <Button
             onClick={() => handleDeleteGroup(currentGroup._id)}
-            color="error"
-          >
+            color='error'>
             Delete
           </Button>
         </DialogActions>

@@ -5,10 +5,6 @@ import {
   Box,
   Skeleton,
   Container,
-  Card,
-  Grid,
-  CardMedia,
-  CardContent,
   Button,
   AppBar,
   Toolbar
@@ -30,8 +26,8 @@ const HomePage = () => {
     const fetchProperties = async () => {
       setLoading(true);
       try {
-        const properties = await getUnauthenticatedClient().get(`api/properties`);
-        setProperties(properties.data);
+        const response = await getUnauthenticatedClient().get(`api/properties`);
+        setProperties(response.data.properties);
       } catch (error) {
         console.error('Error fetching properties and groups:', error);
       } finally {
@@ -44,32 +40,31 @@ const HomePage = () => {
 
   return (
     <>
-      {
-        !user &&
-        <AppBar position="static" sx={{ background: 'transparent', boxShadow: 'none' }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ marginRight: 2 }}
-            onClick={() => {
-              navigate('/login')
-            }}
-          >
-            Login
-          </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => {
-              navigate('/register')
-            }}
-          >
-            Register
-          </Button>
-        </Toolbar>
-      </AppBar>
-      }
+      {!user && (
+        <AppBar
+          position='static'
+          sx={{ background: 'transparent', boxShadow: 'none' }}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant='contained'
+              color='primary'
+              sx={{ marginRight: 2 }}
+              onClick={() => {
+                navigate('/login');
+              }}>
+              Login
+            </Button>
+            <Button
+              variant='outlined'
+              color='secondary'
+              onClick={() => {
+                navigate('/register');
+              }}>
+              Register
+            </Button>
+          </Toolbar>
+        </AppBar>
+      )}
       {/* Banner Section */}
       <Box
         sx={{

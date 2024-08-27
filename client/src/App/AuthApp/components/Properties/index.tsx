@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   Typography,
   Container,
@@ -28,33 +28,58 @@ const Properties = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState('All');
   const [loading, setLoading] = useState(true);
-  const [mapView, setMapView] = useState(false); // State to track map view
+  const [mapView, setMapView] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
+
+  const limit = 6; // Number of properties per page
+
+  const fetchProperties = async page => {
+    setLoading(true);
+    try {
+      const response = await getClient().get(
+        `api/properties?${searchQuery ? `name=${searchQuery}&` : ''}${
+          selectedType !== 'All' ? `type=${selectedType}&` : ''
+        }page=${page}&limit=${limit}`
+      );
+
+      setPropertiesToDisplay(prev => [...prev, ...response.data.properties]);
+      setHasMore(response.data.properties.length > 0); // Check if more data is available
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProperties = async () => {
-      setLoading(true);
-      try {
-        const response = await getClient().get(
-          `api/properties${searchQuery || selectedType !== 'All' ? '?' : ''}${
-            searchQuery ? `name=${searchQuery}` : ''
-          }${searchQuery && selectedType !== 'All' ? '&' : ''}${
-            selectedType !== 'All' ? `type=${selectedType}` : ''
-          }`
-        );
-        setPropertiesToDisplay(response.data);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
+    setPropertiesToDisplay([]); // Reset properties when filters change
+    setCurrentPage(1); // Reset page to 1
+    setHasMore(true); // Reset hasMore flag
   }, [searchQuery, selectedType]);
+
+  useEffect(() => {
+    fetchProperties(currentPage);
+  }, [currentPage, searchQuery, selectedType]);
 
   const handleTypeChange = event => {
     setSelectedType(event.target.value);
   };
+
+  const lastPropertyElementRef = useCallback(
+    node => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          setCurrentPage(prev => prev + 1);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
 
   return (
     <Container>
@@ -169,9 +194,9 @@ const Properties = () => {
           marginTop: '20px',
           minHeight: '300px'
         }}>
-        {loading ? (
+        {loading && currentPage === 1 ? (
           <Grid container spacing={4}>
-            {Array.from(new Array(6)).map((_, index) => (
+            {Array.from(new Array(limit)).map((_, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Skeleton
                   variant='rectangular'
@@ -189,17 +214,41 @@ const Properties = () => {
           <PropertyMap properties={propertiesToDisplay} />
         ) : (
           <Grid container spacing={4}>
-            {propertiesToDisplay?.map(property => (
-              <Grid item xs={12} sm={6} md={4} key={property._id}>
-                <PropertyCard property={property} />
-              </Grid>
-            ))}
+            {propertiesToDisplay.map((property, index) => {
+              if (propertiesToDisplay.length === index + 1) {
+                return (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    key={property._id}
+                    ref={lastPropertyElementRef}>
+                    <PropertyCard property={property} />
+                  </Grid>
+                );
+              } else {
+                return (
+                  <Grid item xs={12} sm={6} md={4} key={property._id}>
+                    <PropertyCard property={property} />
+                  </Grid>
+                );
+              }
+            })}
           </Grid>
         )}
       </Box>
 
       <Box
-        sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          marginTop: '20px',
+          position: 'fixed',
+          bottom: 20,
+          right: 20,
+          zIndex: 10
+        }}>
         <Fab
           color='primary'
           onClick={() => (window.location.href = '/add-property')}>

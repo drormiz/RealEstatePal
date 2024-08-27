@@ -6,34 +6,53 @@ import { UserModel } from '../../models/user.model.js';
 const populatePurchaseGroup = [
   {
     path: 'members',
-    select: 'name username phoneNumber email image _id',
+    select: 'name username phoneNumber email image _id'
   },
   {
-    path: "owner",
-    select: "name username phoneNumber email _id",
+    path: 'owner',
+    select: 'name username phoneNumber email _id'
   },
   {
     path: 'purchaseGroupRequests',
     populate: {
-      path: "user",
-      model: "User",
-      select: "name username phoneNumber email _id",
+      path: 'user',
+      model: 'User',
+      select: 'name username phoneNumber email _id'
     },
-    select: 'priceToInvest description status',
+    select: 'priceToInvest description status'
   },
   {
     path: 'property',
-    select: '_id name description images',
-  },
+    select: '_id name description images'
+  }
 ];
 
-const findPurchaseGroupById = (id) =>
+const findPurchaseGroupById = id =>
   PurchaseGroupModel.findById(id).populate(populatePurchaseGroup);
 
 export const getPurchaseGroups = async (req, res, next) => {
   try {
-    const purchaseGroups = await PurchaseGroupModel.find({}).populate('owner').populate('purchaseGroupRequests');
-    return res.json(purchaseGroups);
+    const { page = 1, limit = 6, searchTerm = '' } = req.query;
+    let filter = {};
+    if (searchTerm) {
+      filter = { name: { $regex: searchTerm, $options: 'i' } };
+    }
+
+    const skip = (page - 1) * limit;
+
+    const purchaseGroups = await PurchaseGroupModel.find(filter)
+      .populate('owner')
+      .populate('purchaseGroupRequests')
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    const totalGroups = await PurchaseGroupModel.countDocuments(filter);
+
+    return res.json({
+      groups: purchaseGroups,
+      totalPages: Math.ceil(totalGroups / limit),
+      currentPage: parseInt(page)
+    });
   } catch (error) {
     next(error);
   }
@@ -59,7 +78,7 @@ export const createPurchaseGroup = async (req, res) => {
   try {
     const purchaseGroupModelData = {
       ...req.body,
-      members: [req.user._id],
+      members: [req.user._id]
     };
 
     const newPurchaseGroup = new PurchaseGroupModel(purchaseGroupModelData);
@@ -105,15 +124,14 @@ export const addStatusToPurchaseGroup = async (req, res) => {
 
   try {
     const purchaseGroup = await findPurchaseGroupById(purchaseGroupId);
-    
+
     if (!purchaseGroup) {
       return res.status(404).json({ error: 'PurchaseGroup not found' });
     }
 
-    purchaseGroup.statuses.push(newStatus)
+    purchaseGroup.statuses.push(newStatus);
 
-    await purchaseGroup.save()
-
+    await purchaseGroup.save();
 
     res.status(200).json(purchaseGroup);
   } catch (error) {
@@ -178,7 +196,7 @@ export const createPurchaseGroupRequest = async (req, res) => {
       return res.status(404).json({ error: 'PurchaseGroup not found' });
     }
 
-    const isMember = group.members.some((member) => member.equals(userId));
+    const isMember = group.members.some(member => member.equals(userId));
 
     if (isMember) {
       return res
@@ -188,7 +206,7 @@ export const createPurchaseGroupRequest = async (req, res) => {
 
     const existingRequest = await PurchaseGroupRequestModel.findOne({
       user: userId,
-      group: groupId,
+      group: groupId
     });
 
     if (existingRequest) {
@@ -197,7 +215,7 @@ export const createPurchaseGroupRequest = async (req, res) => {
 
     const groupRequestData = {
       ...req.body,
-      user: userId,
+      user: userId
     };
 
     const newGroupRequest = new PurchaseGroupRequestModel(groupRequestData);
@@ -267,7 +285,7 @@ export const deletePurchaseGroupRequest = async (req, res) => {
 
     res.status(200).json({
       message: 'Group request deleted successfully',
-      deletedPurchaseGroupRequest,
+      deletedPurchaseGroupRequest
     });
   } catch (error) {
     console.error('Error deleting group request:', error);
