@@ -7,38 +7,53 @@ import multer from 'multer';
 import path from 'path';
 import { configSwagger } from './swagger.js';
 
+const dirname = path.resolve();
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(cors({
-    origin: 'http://localhost:5173', // Adjust the client's URL
-    optionsSuccessStatus: 200,
-  }));
-  
+
 export const expressApp = () => {
-    app.use(cors({
-      origin: 'http://localhost:5173', // Allow only requests from this origin
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-      credentials: true, // Allow sending cookies and HTTP authentication
-      allowedHeaders: 'Content-Type,Authorization',
-    }));
+ // Enable CORS
+// app.use(cors({
+//   origin: 'https://node17.cs.colman.ac.il', // Allow only requests from this origin
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   credentials: true, // Allow sending cookies and HTTP authentication
+//   allowedHeaders: 'Content-Type,Authorization',
+//   optionsSuccessStatus: 200
+// }));
 
-    app.use(express.static('public'));
-    app.use(express.urlencoded({ extended: false }));
-    app.set('view engine', 'ejs');
-    
-    app.get('/', (req, res) => {
-      res.render('index');
-    });
-  
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
+// Serve static files from the 'dist' directory
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static(path.join(dirname, 'dist')));
+}
 
-    app.use('/', routes);
-    
-    configSwagger(app);
+app.use(express.static('public'));
 
-    app.get('*', notFoundError);
-    app.use(ErrorHandler);
+// Parse JSON and URL-encoded data
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-    return app;
+// Configure Swagger
+configSwagger(app);
+
+// Handle API routes
+app.use('/', routes);
+
+// Catch-all route for serving index.html
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(dirname, 'dist', 'index.html'));
+});
+
+// Handle 404 errors
+app.use(notFoundError);
+
+// Handle other errors with the custom error handler
+app.use(ErrorHandler);
+
+if(process.env.NODE_ENV === 'production'){
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+return app;
 }
