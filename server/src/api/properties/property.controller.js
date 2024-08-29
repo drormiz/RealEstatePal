@@ -14,7 +14,6 @@ export const getProperties = async (req, res, next) => {
     }
 
     const skip = (page - 1) * limit;
-
     const properties = await PropertyModel.find(filter)
       .populate({
         path: 'owner',
@@ -22,7 +21,6 @@ export const getProperties = async (req, res, next) => {
       })
       .skip(skip)
       .limit(Number(limit));
-
     const totalProperties = await PropertyModel.countDocuments(filter);
     const totalPages = Math.ceil(totalProperties / limit);
 

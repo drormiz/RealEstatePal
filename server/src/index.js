@@ -5,13 +5,13 @@ import { expressApp } from './config/express.js';
 const port = process.env.PORT || 3000;
 
 connectToDatabase()
-    .then(()=> {
-        const app = expressApp();
+  .then(() => {
+    const app = expressApp();
 
-        app.listen(port, () => {
-            console.log(`Server is running on http://localhost:${port}`);
-        });
-    })
-    .catch(error => {
-        console.log(error);
+    app.listen(port, () => {
+      console.log(`Server is running on port ${port}`);
     });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
