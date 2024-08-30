@@ -37,7 +37,7 @@ const UserAdmission = ({ formTitle, to, message, FormContent }) => {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#a19595",
+    backgroundColor: "#fff",
   };
 
   return (
