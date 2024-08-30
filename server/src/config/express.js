@@ -18,7 +18,7 @@ export const expressApp = () => {
     console.log("production mode2");
     app.use(
       cors({
-        origin: "http://realestatepal.cs.colman.ac.il",
+        origin: "https://realestatepal.cs.colman.ac.il",
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true, 
         allowedHeaders: "Content-Type,Authorization",
