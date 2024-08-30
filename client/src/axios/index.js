@@ -4,6 +4,9 @@ import { env } from "../env";
 const getToken = () => localStorage.getItem("token");
 export const getRefreshToken = () => localStorage.getItem("refreshToken");
 
+console.log("serverAddress");
+console.log(env.serverAddress);
+
 const fileClient = axios.create({
   baseURL: env.serverAddress,
 });
