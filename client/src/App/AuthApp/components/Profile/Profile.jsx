@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   Typography,
@@ -7,38 +7,43 @@ import {
   IconButton,
   Box,
   Stack,
-  IconButton as MuiIconButton
-} from '@mui/material';
-import { useUser } from '../../contexts/UserContext';
-import { toast } from 'react-toastify';
-import stringToColor from 'string-to-color';
-import { getClient, uploadRequest, updateUser } from '../../../../axios';
-import UpgradeIcon from '@mui/icons-material/Upgrade';
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  IconButton as MuiIconButton,
+} from "@mui/material";
+import { useUser } from "../../contexts/UserContext";
+import { toast } from "react-toastify";
+import stringToColor from "string-to-color";
+import { getClient, uploadRequest, updateUser } from "../../../../axios";
+import UpgradeIcon from "@mui/icons-material/Upgrade";
 
-const getInitials = name => {
+const getInitials = (name) => {
   return name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
     .toUpperCase();
 };
 
 const Profile = () => {
   const { user, setUser } = useUser();
-  const [preview, setPreview] = useState(user.image || '');
+  const [preview, setPreview] = useState(user.image || "");
   const [formState, setFormState] = useState({
-    name: user.name || '',
-    username: user.username || ''
+    name: user.name || "",
+    username: user.username || "",
   });
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setPreview(user.image || '');
+    setPreview(user.image || "");
   }, [user.image]);
 
   useEffect(() => {
@@ -49,50 +54,50 @@ const Profile = () => {
         );
         setRequests(response.data);
       } catch (error) {
-        console.error('Error fetching requests:', error);
+        console.error("Error fetching requests:", error);
       }
     };
 
     fetchRequests();
   }, [user._id]);
 
-  const uploadProfileImage = async file => {
+  const uploadProfileImage = async (file) => {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append("image", file);
 
     try {
       const response = await uploadRequest(formData);
       const imageUrl = response.data.imageUrl;
       const updatedUser = await updateUser(user._id, { image: imageUrl });
       setUser(updatedUser.data);
-      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const storedUser = JSON.parse(localStorage.getItem("user"));
       setPreview(updatedUser.data.image);
-      localStorage.setItem('user', JSON.stringify(updatedUser.data));
+      localStorage.setItem("user", JSON.stringify(updatedUser.data));
       window.location.reload();
-      toast.success('Profile image updated successfully!');
+      toast.success("Profile image updated successfully!");
     } catch (error) {
-      console.error('Error uploading image:', error);
-      toast.error('Failed to upload image.');
+      console.error("Error uploading image:", error);
+      toast.error("Failed to upload image.");
     }
   };
 
   const handleUpdate = async () => {
     try {
-      const localUser = JSON.parse(localStorage.getItem('user'));
+      const localUser = JSON.parse(localStorage.getItem("user"));
       const updatedUser = await updateUser(user._id, {
         name: formState.name,
-        username: formState.username
+        username: formState.username,
       });
       setUser(updatedUser.data);
-      localStorage.setItem('user', JSON.stringify(updatedUser.data));
-      toast.success('Profile updated successfully!');
+      localStorage.setItem("user", JSON.stringify(updatedUser.data));
+      toast.success("Profile updated successfully!");
     } catch (error) {
       if (
         error.response &&
         (error.response.status === 400 || error.response.status === 404)
       ) {
         console.error(
-          'Error updating user profile:',
+          "Error updating user profile:",
           error.response.data.error
         );
         toast.error(error.response.data.error);
@@ -100,15 +105,15 @@ const Profile = () => {
     }
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormState(prevFormState => ({
+    setFormState((prevFormState) => ({
       ...prevFormState,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleImageChange = async event => {
+  const handleImageChange = async (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = () => {
@@ -122,15 +127,15 @@ const Profile = () => {
   const handlePasswordDialogClose = () => {
     setPasswordDialogOpen(false);
     setPasswordForm({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     });
   };
 
-  const handlePasswordChange = event => {
+  const handlePasswordChange = (event) => {
     const { name, value } = event.target;
-    setPasswordForm(prev => ({ ...prev, [name]: value }));
+    setPasswordForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePasswordSubmit = async () => {
@@ -142,129 +147,221 @@ const Profile = () => {
     try {
       const updatedUser = await updateUser(user._id, {
         currentPassword: passwordForm.currentPassword,
-        newPassword: passwordForm.newPassword
+        newPassword: passwordForm.newPassword,
       });
 
       if (updatedUser) {
-        toast.success('Password changed successfully');
+        toast.success("Password changed successfully");
         setPasswordDialogOpen(false);
         setPasswordForm({
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
         });
         setUser(updatedUser.data);
-        localStorage.setItem('user', JSON.stringify(updatedUser.data));
+        localStorage.setItem("user", JSON.stringify(updatedUser.data));
       }
     } catch (error) {
       if (error.response && error.response.status === 400) {
         toast.error(error.response.data.error);
       } else {
-        toast.error('Failed to change password');
+        toast.error("Failed to change password");
       }
     }
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setDeleteRequestId(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteRequestId) {
+      handleDeleteRequest(deleteRequestId);
+    }
+    handleCloseDialog();
   };
 
   return (
     <Stack
       fullWidth
       sx={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        height: '100%'
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        height: "100%",
       }}
-      spacing={1}>
+      spacing={1}
+    >
       <Box
         sx={{
-          position: 'relative',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: '100%',
-          maxWidth: '300px',
-          margin: '0 auto',
-          maxHeight: '300px'
-        }}>
+          position: "relative",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+          maxWidth: "300px",
+          margin: "0 auto",
+          maxHeight: "300px",
+        }}
+      >
         <Avatar
           alt={user.username}
           src={preview}
           sx={{
-            width: '100%',
-            height: 'auto',
-            border: '4px solid white',
-            boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.2)',
-            fontSize: '2.5rem',
-            bgcolor: preview ? 'transparent' : stringToColor(user.name)
-          }}>
+            width: "250px", 
+            height: "250px", 
+            border: "4px solid white",
+            boxShadow: "0px 0px 8px rgba(0, 0, 0, 0.2)",
+            fontSize: "2.5rem",
+            bgcolor: preview ? "transparent" : stringToColor(user.name),
+            borderRadius: "50%", 
+          }}
+        >
           {!preview && getInitials(user.name)}
         </Avatar>
         <IconButton
-          color='primary'
-          aria-label='upload picture'
-          component='label'
+          color="primary"
+          aria-label="upload picture"
+          component="label"
           sx={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 30,
             right: 8,
-            bgcolor: 'white',
-            borderRadius: '50%',
-            border: '2px solid #ddd',
-            '&:hover': {
-              bgcolor: '#f5f5f5'
+            bgcolor: "white",
+            borderRadius: "50%",
+            border: "2px solid #ddd",
+            "&:hover": {
+              bgcolor: "#f5f5f5",
             },
             width: 40,
-            height: 40
-          }}>
+            height: 40,
+          }}
+        >
           <input
             hidden
-            accept='image/*'
-            type='file'
+            accept="image/*"
+            type="file"
             onChange={handleImageChange}
           />
           <UpgradeIcon />
         </IconButton>
       </Box>
 
-      <Stack flex={1} sx={{ width: '50%' }}>
-        <Typography variant='h4' gutterBottom>
+      <Stack flex={1} sx={{ width: "50%" }}>
+        <Typography variant="h4" gutterBottom>
           {user.username}
         </Typography>
         <TextField
-          label='Name'
-          name='name'
-          variant='outlined'
+          label="Name"
+          name="name"
+          variant="outlined"
           fullWidth
-          margin='normal'
+          margin="normal"
           value={formState.name}
           onChange={handleChange}
         />
         <TextField
-          label='Username'
-          name='username'
-          variant='outlined'
+          label="Username"
+          name="username"
+          variant="outlined"
           fullWidth
-          margin='normal'
+          margin="normal"
           value={formState.username}
           onChange={handleChange}
         />
-        <Stack direction='row' sx={{ justifyContent: 'center' }} spacing={2}>
+        <Stack direction="row" sx={{ justifyContent: "center" }} spacing={2}>
           <Button
-            variant='contained'
-            color='primary'
-            sx={{ borderRadius: '25px' }}
-            onClick={handleUpdate}>
+            variant="contained"
+            color="primary"
+            sx={{ borderRadius: "25px" }}
+            onClick={handleUpdate}
+          >
             Update Profile
           </Button>
           <Button
-            variant='contained'
-            color='primary'
-            sx={{ borderRadius: '25px' }}
-            onClick={() => setPasswordDialogOpen(true)}>
+            variant="contained"
+            color="primary"
+            sx={{ borderRadius: "25px" }}
+            onClick={() => setPasswordDialogOpen(true)}
+          >
             Change Password
           </Button>
         </Stack>
       </Stack>
+
+      <Dialog
+        open={open}
+        onClose={handleCloseDialog}
+        aria-labelledby="delete-request-dialog-title"
+      >
+        <DialogTitle id="delete-request-dialog-title">
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this request?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={passwordDialogOpen}
+        onClose={handlePasswordDialogClose}
+        aria-labelledby="change-password-dialog-title"
+      >
+        <DialogTitle id="change-password-dialog-title">
+          Change Password
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Current Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            name="currentPassword"
+            value={passwordForm.currentPassword}
+            onChange={handlePasswordChange}
+          />
+          <TextField
+            margin="dense"
+            label="New Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            name="newPassword"
+            value={passwordForm.newPassword}
+            onChange={handlePasswordChange}
+          />
+          <TextField
+            margin="dense"
+            label="Confirm New Password"
+            type="password"
+            fullWidth
+            variant="outlined"
+            name="confirmPassword"
+            value={passwordForm.confirmPassword}
+            onChange={handlePasswordChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePasswordDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handlePasswordSubmit} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
+              
+      </Dialog>
     </Stack>
   );
 };

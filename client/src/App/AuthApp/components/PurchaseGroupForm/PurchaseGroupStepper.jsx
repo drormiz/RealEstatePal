@@ -46,7 +46,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
   });
 
   const participationPrice = !!watch('participationPrice') ? watch('participationPrice') :
-            !!watch('maxMembersCount') ? properties.find(x => x._id === state.group.property).price/watch('maxMembersCount') : 0
+            !!watch('maxMembersCount') ? properties?.properties?.find(x => x._id === state.group.property).price/watch('maxMembersCount') : 0
 
   useEffect(() => {
     if (state?.group) {
@@ -149,7 +149,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                 <Grid item xs={12}>
                   <TextField
                     {...register("participationPrice")}
-                    label={`Participation Price: propery price(${properties.find(x => x._id === state.group.property).price}$), divided by members count`}
+                    label={`Participation Price: propery price(${properties?.properties?.find(x => x._id === state.group.property).price}$), divided by members count`}
                     type="number"
                     InputLabelProps={{ shrink: true }}
                     variant="outlined"
@@ -179,7 +179,7 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                     fullWidth
                     label="Property - cannot be updated"
                     value={
-                      properties.find(
+                      properties?.properties?.find(
                         (property) => property._id === state.group.property
                       )?.name || ""
                     }
@@ -198,11 +198,11 @@ const PurchaseGroupForm = ({ onSubmitHandler, properties }) => {
                       control={control}
                       render={({ field: { onChange, value, ref } }) => (
                         <Autocomplete
-                          options={properties}
+                          options={properties?.properties}
                           getOptionLabel={(option) => option ? option.name : ''}
                           isOptionEqualToValue={(option, value) => option._id === value}
                           onChange={(_, data) => onChange(data ? data._id : '')}
-                          value={properties.find((property) => property._id === value) || null}
+                          value={properties?.properties?.find((property) => property._id === value) || null}
                           renderInput={(params) => (
                             <TextField
                               {...params}
