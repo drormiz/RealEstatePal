@@ -13,9 +13,15 @@ const port = process.env.PORT || 3000;
 const dirname = path.resolve();
 
 export const expressApp = () => {
-  const app = express();
 
-  app.use(cors());
+  const app = express();
+  app.use(cors({
+    origin: 'http://realestatepal.cs.colman.ac.il', // Allow only requests from this origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Allow sending cookies and HTTP authentication
+    allowedHeaders: 'Content-Type,Authorization',
+    optionsSuccessStatus: 200
+  }));
 
   app.use(express.static('public'));
   app.use(express.urlencoded({ extended: false }));
