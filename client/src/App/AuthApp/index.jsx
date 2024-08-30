@@ -8,7 +8,7 @@ const AuthenticatedApp = ({ user }) => (
   <UserProvider loggedUser={user}>
     <Column sx={{ minHeight: "100vh", width: 1 }}>
       <AppBar />
-      <Row sx={{ flex: 1, padding: '20px' }}>
+      <Row sx={{ flex: 1 }}>
         <Column sx={{ width: 1 }}>
           <AuthenticatedRoutes />
         </Column>

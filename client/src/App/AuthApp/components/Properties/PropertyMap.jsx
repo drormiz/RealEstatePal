@@ -2,6 +2,7 @@ import React from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import PropertyCard from "./PropertyCard";
+import { customIcon } from "../PropertyForm/LocationPicker";
 
 const PropertyMap = ({ properties }) => {
   return (
@@ -18,6 +19,7 @@ const PropertyMap = ({ properties }) => {
         <Marker
           key={property._id}
           position={[property.latitude, property.longitude]}
+          icon={customIcon}
         >
           <Popup>
             <PropertyCard property={property} />

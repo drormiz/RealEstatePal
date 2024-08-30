@@ -157,7 +157,7 @@ const PurchaseGroupCard = ({
     backgroundColor: isGroupFull(group) && "green",
   }}} value={(group.members?.length/group.maxMembersCount)*100}/>
                     <Typography variant="body2" color="textSecondary">
-                    {group.members?.length*group.participationPrice}/{group.maxMembersCount*group.participationPrice}$ recruited
+                    {(group.members?.length*group.participationPrice)?.toFixed(0)}/{group.maxMembersCount*group.participationPrice}$ recruited
                     </Typography>
                     </Grid>
                     

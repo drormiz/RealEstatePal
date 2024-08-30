@@ -63,7 +63,10 @@ const ViewPurchaseGroup: React.FC = () => {
 
   const handleStatusChange = async (requestId: string, status: string) => {
     try {
-      if (status === "approved" && group?.maxMembersCount === group?.members.length) {
+      console.log("Request ID:", requestId);
+      console.log(group);
+      console.log("Status:", status); 
+      if (status === "approved" && group?.maxMembersCount === group?.members.length?.toString()) {
         toast.error("The group is full.");
         return;
       }
@@ -136,7 +139,8 @@ const ViewPurchaseGroup: React.FC = () => {
           <Stack direction="row" alignItems="center" spacing={1}>
             {userRequest.status === "pending" && <HourglassEmptyIcon />}
             {userRequest.status === "rejected" && <HighlightOffIcon />}
-            {userRequest.status === "pending" ? 'Your request is pending approval.' : 'Your request was rejected by the Admin of the group.'}
+            {userRequest.status === "pending" && 'Your request is pending approval.'}
+            {userRequest.status === "rejected" && 'Your request was rejected by the admin of the group.'}
           </Stack>
         </Typography>
       )}
