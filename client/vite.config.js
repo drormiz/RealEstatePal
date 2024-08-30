@@ -17,7 +17,7 @@ export default defineConfig({
     port: 80,
     proxy: {
       '/api': 'http://realestatepal.cs.colman.ac.il',
-      '/uploads': 'http://realestatepal.cs.colman.ac.il',
+      '/auth': 'http://realestatepal.cs.colman.ac.il',
     },
   },
 });
