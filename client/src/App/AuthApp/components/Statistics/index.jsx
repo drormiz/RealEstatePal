@@ -49,7 +49,7 @@ const chartTypes = {
 };
 
 const formatNumberWithCommas = (number) =>
-  number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "$";
 const capitalizeFirstLetter = (string) =>
   string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 
@@ -186,8 +186,10 @@ const Statistics = () => {
               variant={activeChart === chartType ? "contained" : "outlined"}
               onClick={() => setActiveChart(chartType)}
             >
-              {chartType.split(/(?=[A-Z])/).join(" ").replace(/\b\w/g, char => char.toUpperCase())}
-
+              {chartType
+                .split(/(?=[A-Z])/)
+                .join(" ")
+                .replace(/\b\w/g, (char) => char.toUpperCase())}
             </Button>
           </Grid>
         ))}
